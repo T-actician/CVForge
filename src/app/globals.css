@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  --cream: #fbf6ec;
+  --ivory: #f4ecdb;
+  --paper: #fffdf8;
+  --gold: #c9974a;
+  --gold-dark: #a97c33;
+  --gold-light: #e4c78a;
+  --brown-900: #241a10;
+  --brown-800: #33261a;
+  --brown-700: #4a3826;
+  --brown-500: #6f5a41;
+  --brown-300: #9c8869;
+  --line: #e6dcc6;
+
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-serif: "Lora", Georgia, serif;
+  --font-sans: "Inter", -apple-system, "Segoe UI", sans-serif;
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--cream);
+  color: var(--brown-900);
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+.font-serif-body {
+  font-family: var(--font-serif);
+}
+
+::selection {
+  background: var(--gold-light);
+  color: var(--brown-900);
+}
+
+.gold-gradient-text {
+  background: linear-gradient(115deg, var(--gold-dark), var(--gold) 45%, #8f6a2c 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media print {
+  @page {
+    margin: 0;
+  }
+  body {
+    background: white;
+  }
+}
