@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { FileText, LogOut, Save, Check } from "lucide-react";
+import { FileText, LogOut, Save, Check, Trash2 } from "lucide-react";
 import type { SiteConfig } from "@/lib/siteConfig";
 import { createClient } from "@/lib/supabase/client";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import VideoUploadField from "@/components/admin/VideoUploadField";
+import TrashPanel from "@/components/admin/TrashPanel";
 
 const TEXT_FIELDS: { key: keyof SiteConfig; label: string; type: "text" | "textarea" }[] = [
   { key: "heroEyebrow", label: "Eyebrow label (above headline)", type: "text" },
@@ -24,6 +25,7 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [tab, setTab] = useState<"content" | "trash">("content");
 
   useEffect(() => {
     fetch("/api/admin/config")
@@ -94,6 +96,36 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-2xl mx-auto px-6 sm:px-10 py-12">
+        <div className="flex items-center gap-1 mb-8 border-b border-[var(--line)]">
+          <button
+            type="button"
+            onClick={() => setTab("content")}
+            className={`px-4 py-2.5 text-[13.5px] border-b-2 -mb-px transition-colors ${
+              tab === "content"
+                ? "border-[var(--gold)] text-[var(--brown-900)]"
+                : "border-transparent text-[var(--brown-300)] hover:text-[var(--brown-700)]"
+            }`}
+          >
+            Content
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("trash")}
+            className={`inline-flex items-center gap-1.5 px-4 py-2.5 text-[13.5px] border-b-2 -mb-px transition-colors ${
+              tab === "trash"
+                ? "border-[var(--gold)] text-[var(--brown-900)]"
+                : "border-transparent text-[var(--brown-300)] hover:text-[var(--brown-700)]"
+            }`}
+          >
+            <Trash2 size={13} />
+            Trash
+          </button>
+        </div>
+
+        {tab === "trash" ? (
+          <TrashPanel />
+        ) : (
+          <>
         <h1 className="font-display text-3xl text-[var(--brown-900)] mb-2">
           Homepage Content
         </h1>
@@ -155,6 +187,8 @@ export default function AdminDashboard() {
         </button>
         {saveError && (
           <p className="mt-3 text-[13px] text-[#a5473a]">{saveError}</p>
+        )}
+          </>
         )}
       </div>
     </main>
