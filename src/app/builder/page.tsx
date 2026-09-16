@@ -59,7 +59,7 @@ function BuilderInner() {
           >
             <Sparkles size={14} /> Load sample data
           </button>
-          <DownloadButton />
+          <DownloadButton settings={templateSettings[templateId]} />
         </div>
       </header>
 

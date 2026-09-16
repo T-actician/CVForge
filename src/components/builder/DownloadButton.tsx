@@ -4,20 +4,26 @@ import { useRef, useState } from "react";
 import { Download, Loader2, Cloud, Check } from "lucide-react";
 import { useCVStore } from "@/store/cvStore";
 import CVRenderer from "@/components/cv-templates/CVRenderer";
+import { TemplateSettings } from "@/lib/templateSettings";
 
-export default function DownloadButton() {
+export default function DownloadButton({ settings }: { settings?: TemplateSettings }) {
   const { cv, templateId } = useCVStore();
   const exportRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
   const [cloudUrl, setCloudUrl] = useState("");
+  const [error, setError] = useState("");
 
   const handleDownload = async () => {
     if (!exportRef.current) return;
     setLoading(true);
     setCloudUrl("");
+    setError("");
     try {
+      // html2canvas-pro (not stock html2canvas) — Tailwind v4's opacity
+      // modifiers (e.g. "border-white/15") compile to color-mix(in oklab, ...),
+      // which stock html2canvas can't parse and aborts the export on.
       const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
-        import("html2canvas"),
+        import("html2canvas-pro"),
         import("jspdf"),
       ]);
 
@@ -44,6 +50,8 @@ export default function DownloadButton() {
         const data = await res.json();
         setCloudUrl(data.url);
       }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not generate the PDF.");
     } finally {
       setLoading(false);
     }
@@ -75,11 +83,12 @@ export default function DownloadButton() {
           <Cloud size={14} />
         </span>
       )}
+      {error && <p className="text-[12.5px] text-[#a5473a]">{error}</p>}
 
       {/* Hidden full-resolution render used for crisp PDF export */}
       <div className="fixed top-0 left-[-99999px]" aria-hidden>
         <div ref={exportRef} style={{ width: 794 }}>
-          <CVRenderer templateId={templateId} cv={cv} />
+          <CVRenderer templateId={templateId} cv={cv} settings={settings} />
         </div>
       </div>
     </div>
