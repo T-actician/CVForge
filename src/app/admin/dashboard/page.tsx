@@ -9,14 +9,14 @@ import { createClient } from "@/lib/supabase/client";
 import ImageUploadField from "@/components/admin/ImageUploadField";
 import VideoUploadField from "@/components/admin/VideoUploadField";
 import TrashPanel from "@/components/admin/TrashPanel";
+import HeroCvEditor from "@/components/admin/HeroCvEditor";
+import TemplatesPanel from "@/components/admin/TemplatesPanel";
 
 const TEXT_FIELDS: { key: keyof SiteConfig; label: string; type: "text" | "textarea" }[] = [
   { key: "heroEyebrow", label: "Eyebrow label (above headline)", type: "text" },
   { key: "heroHeading", label: "Headline — line 1", type: "text" },
   { key: "heroHeadingAccent", label: "Headline — line 2 (gold accent)", type: "text" },
   { key: "heroSubheading", label: "Subheading", type: "textarea" },
-  { key: "heroPersonName", label: "Mockup CV name", type: "text" },
-  { key: "heroPersonTitle", label: "Mockup CV job title", type: "text" },
 ];
 
 export default function AdminDashboard() {
@@ -25,7 +25,7 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState("");
-  const [tab, setTab] = useState<"content" | "trash">("content");
+  const [tab, setTab] = useState<"content" | "trash" | "templates">("content");
 
   useEffect(() => {
     fetch("/api/admin/config")
@@ -36,6 +36,12 @@ export default function AdminDashboard() {
   const handleChange = (key: keyof SiteConfig, value: string) => {
     if (!config) return;
     setConfig({ ...config, [key]: value });
+    setSaved(false);
+  };
+
+  const handleCvChange = (cv: SiteConfig["heroCV"]) => {
+    if (!config) return;
+    setConfig({ ...config, heroCV: cv });
     setSaved(false);
   };
 
@@ -95,7 +101,7 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="max-w-2xl mx-auto px-6 sm:px-10 py-12">
+      <div className={`mx-auto px-6 sm:px-10 py-12 ${tab === "templates" ? "max-w-5xl" : "max-w-2xl"}`}>
         <div className="flex items-center gap-1 mb-8 border-b border-[var(--line)]">
           <button
             type="button"
@@ -120,10 +126,23 @@ export default function AdminDashboard() {
             <Trash2 size={13} />
             Trash
           </button>
+          <button
+            type="button"
+            onClick={() => setTab("templates")}
+            className={`px-4 py-2.5 text-[13.5px] border-b-2 -mb-px transition-colors ${
+              tab === "templates"
+                ? "border-[var(--gold)] text-[var(--brown-900)]"
+                : "border-transparent text-[var(--brown-300)] hover:text-[var(--brown-700)]"
+            }`}
+          >
+            Templates
+          </button>
         </div>
 
         {tab === "trash" ? (
           <TrashPanel />
+        ) : tab === "templates" ? (
+          <TemplatesPanel />
         ) : (
           <>
         <h1 className="font-display text-3xl text-[var(--brown-900)] mb-2">
@@ -139,12 +158,14 @@ export default function AdminDashboard() {
             value={config.heroBackgroundImage}
             onChange={(url) => handleChange("heroBackgroundImage", url)}
             folder="site-hero"
+            fieldKey="heroBackgroundImage"
           />
 
           <VideoUploadField
             label='"Watch How It Works" video'
             value={config.howItWorksVideoUrl}
             onChange={(url) => handleChange("howItWorksVideoUrl", url)}
+            fieldKey="howItWorksVideoUrl"
           />
 
           {TEXT_FIELDS.map((f) => (
@@ -154,14 +175,14 @@ export default function AdminDashboard() {
               </span>
               {f.type === "textarea" ? (
                 <textarea
-                  value={config[f.key]}
+                  value={config[f.key] as string}
                   onChange={(e) => handleChange(f.key, e.target.value)}
                   rows={3}
                   className="w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3.5 py-2.5 text-[14px] outline-none focus:border-[var(--gold)] resize-none"
                 />
               ) : (
                 <input
-                  value={config[f.key]}
+                  value={config[f.key] as string}
                   onChange={(e) => handleChange(f.key, e.target.value)}
                   className="w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3.5 py-2.5 text-[14px] outline-none focus:border-[var(--gold)]"
                 />
@@ -174,8 +195,17 @@ export default function AdminDashboard() {
             value={config.howItWorksBackgroundImage}
             onChange={(url) => handleChange("howItWorksBackgroundImage", url)}
             folder="site-how-it-works"
+            fieldKey="howItWorksBackgroundImage"
           />
         </div>
+
+        <h2 className="font-display text-2xl text-[var(--brown-900)] mt-10 mb-1">
+          Hero Mockup CV
+        </h2>
+        <p className="text-[13.5px] text-[var(--brown-500)] mb-2">
+          This is the sample CV shown on the homepage. Every field is editable.
+        </p>
+        <HeroCvEditor cv={config.heroCV} onChange={handleCvChange} />
 
         <button
           onClick={handleSave}

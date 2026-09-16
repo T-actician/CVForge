@@ -14,7 +14,7 @@ export default function ElegantSidebar({ cv }: { cv: CVData }) {
         >
           {cv.fullName || "Your Name"}
         </p>
-        <p className="text-[11px] text-[#e4c78a] mt-1">{cv.jobTitle}</p>
+        <p className="text-[11px] text-[var(--tpl-accent-light)] mt-1">{cv.jobTitle}</p>
 
         <div className="mt-5 space-y-1 text-[9.5px] text-white/70">
           {cv.email && <p>{cv.email}</p>}

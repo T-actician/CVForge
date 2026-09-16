@@ -4,7 +4,7 @@ import { CVSection, LIGHT_STYLE, splitSections, Avatar } from "./shared";
 const ASIDE_STYLE = {
   ...LIGHT_STYLE,
   titleClass:
-    "text-[10px] tracking-[0.12em] uppercase font-semibold text-[#a97c33] pb-1 mb-2 border-b border-[#e6dcc6]",
+    "text-[10px] tracking-[0.12em] uppercase font-semibold text-[var(--tpl-accent-dark)] pb-1 mb-2 border-b border-[#e6dcc6]",
 };
 
 export default function CreativeProfessional({ cv }: { cv: CVData }) {
@@ -21,7 +21,7 @@ export default function CreativeProfessional({ cv }: { cv: CVData }) {
           >
             {cv.fullName || "Your Name"}
           </p>
-          <p className="text-[11px] text-[#e4c78a] mt-0.5">{cv.jobTitle}</p>
+          <p className="text-[11px] text-[var(--tpl-accent-light)] mt-0.5">{cv.jobTitle}</p>
           <p className="text-[9px] text-white/60 mt-1.5">
             {[cv.email, cv.phone, cv.location, cv.website].filter(Boolean).join("  ·  ")}
           </p>

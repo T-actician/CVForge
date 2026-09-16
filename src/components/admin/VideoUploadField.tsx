@@ -7,10 +7,12 @@ import ConfirmModal from "@/components/admin/ConfirmModal";
 export default function VideoUploadField({
   label,
   value,
+  fieldKey,
   onChange,
 }: {
   label: string;
   value: string;
+  fieldKey: string;
   onChange: (url: string) => void;
 }) {
   const [uploading, setUploading] = useState(false);
@@ -18,6 +20,18 @@ export default function VideoUploadField({
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Persists just this one field immediately — delete/replace must not wait
+  // for the page's main "Save changes" button, or the old file never makes
+  // it into Trash until the admin happens to click Save.
+  const persist = async (newValue: string) => {
+    await fetch("/api/admin/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [fieldKey]: newValue }),
+    });
+    onChange(newValue);
+  };
 
   const handleFile = async (file: File | null) => {
     if (!file) return;
@@ -52,7 +66,7 @@ export default function VideoUploadField({
         xhr.send(file);
       });
 
-      onChange(presignData.url);
+      await persist(presignData.url);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed.");
     } finally {
@@ -122,7 +136,7 @@ export default function VideoUploadField({
         confirmLabel="Move to Trash"
         danger
         onConfirm={() => {
-          onChange("");
+          persist("");
           setConfirmDelete(false);
         }}
         onCancel={() => setConfirmDelete(false)}

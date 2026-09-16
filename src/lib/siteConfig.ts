@@ -1,6 +1,7 @@
 import { getJSON, putJSON } from "@/lib/b2";
 import { mediaUrlToKey } from "@/lib/mediaUrls";
 import { addToTrash } from "@/lib/trash";
+import { CVData, sampleCV } from "@/lib/cvTypes";
 
 const CONTENT_KEY = "content/site.json";
 
@@ -24,8 +25,7 @@ export interface SiteConfig {
   heroHeadingAccent: string;
   heroSubheading: string;
   heroBackgroundImage: string; // stores a B2 object key, not a URL
-  heroPersonName: string;
-  heroPersonTitle: string;
+  heroCV: CVData; // the fully-editable sample CV shown in the hero mockup
   howItWorksBackgroundImage: string; // stores a B2 object key, not a URL
   howItWorksVideoUrl: string; // media proxy path (/api/media/videos%2F...)
 }
@@ -37,8 +37,7 @@ const DEFAULTS: SiteConfig = {
   heroSubheading:
     "Choose from elegant, ATS-friendly templates, customize with your details, and download a professional CV that helps you stand out.",
   heroBackgroundImage: "",
-  heroPersonName: "Daniel Mwangi",
-  heroPersonTitle: "Software Engineer",
+  heroCV: sampleCV(),
   howItWorksBackgroundImage: "",
   howItWorksVideoUrl: "",
 };

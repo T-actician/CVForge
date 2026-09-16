@@ -1,10 +1,6 @@
-export default function MiniCVMockup({
-  name,
-  title,
-}: {
-  name: string;
-  title: string;
-}) {
+import { CVData } from "@/lib/cvTypes";
+
+export default function MiniCVMockup({ cv }: { cv: CVData }) {
   return (
     <div className="bg-[var(--paper)] text-[var(--brown-900)] p-5 text-[9px] leading-tight font-sans h-full w-full overflow-hidden">
       <div className="flex items-start justify-between">
@@ -12,16 +8,18 @@ export default function MiniCVMockup({
           <div className="h-8 w-8 rounded-full bg-[var(--ivory)] border border-[var(--line)]" />
           <div>
             <p className="font-display text-[13px] leading-none text-[var(--brown-900)]">
-              {name}
+              {cv.fullName}
             </p>
-            <p className="text-[9px] text-[var(--brown-500)] mt-1">{title}</p>
+            <p className="text-[9px] text-[var(--brown-500)] mt-1">{cv.jobTitle}</p>
             <div className="mt-1.5 flex gap-3 text-[7.5px] text-[var(--brown-500)]">
-              <span>daniel.mwangi@example.com</span>
-              <span>+254 712 345 678</span>
+              {cv.email && <span>{cv.email}</span>}
+              {cv.phone && <span>{cv.phone}</span>}
             </div>
-            <p className="text-[7.5px] text-[var(--brown-500)]">
-              Nairobi, Kenya · linkedin.com/in/danielmwangi
-            </p>
+            {(cv.location || cv.website) && (
+              <p className="text-[7.5px] text-[var(--brown-500)]">
+                {[cv.location, cv.website].filter(Boolean).join(" · ")}
+              </p>
+            )}
           </div>
         </div>
         <div className="h-9 w-9 rounded-full bg-[var(--ivory)] border border-[var(--line)] shrink-0" />
@@ -29,68 +27,85 @@ export default function MiniCVMockup({
 
       <div className="grid grid-cols-[1fr_74px] gap-4 mt-4">
         <div>
-          <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5">
-            Professional Summary
-          </p>
-          <p className="text-[7.5px] text-[var(--brown-500)]">
-            Motivated and detail-oriented Software Engineer with 3+ years of
-            experience in building scalable web applications. Passionate
-            about clean code and continuous learning.
-          </p>
+          {cv.summary && (
+            <>
+              <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5">
+                Professional Summary
+              </p>
+              <p className="text-[7.5px] text-[var(--brown-500)]">{cv.summary}</p>
+            </>
+          )}
 
-          <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5 mt-3">
-            Work Experience
-          </p>
-          <p className="text-[7.5px] font-semibold">
-            Software Engineer | TechSolutions Ltd{" "}
-            <span className="float-right font-normal text-[var(--brown-500)]">
-              2022 – Present
-            </span>
-          </p>
-          <ul className="list-disc ml-3 text-[7px] text-[var(--brown-500)] mt-0.5 space-y-0.5">
-            <li>Developed and maintained applications using React and Node.js</li>
-            <li>Collaborated with cross-functional teams to deliver quality code</li>
-            <li>Improved application performance by 40% through optimization</li>
-          </ul>
-          <p className="text-[7.5px] font-semibold mt-1.5">
-            Junior Developer | BrightTech Solutions{" "}
-            <span className="float-right font-normal text-[var(--brown-500)]">
-              2020 – 2021
-            </span>
-          </p>
-          <ul className="list-disc ml-3 text-[7px] text-[var(--brown-500)] mt-0.5 space-y-0.5">
-            <li>Built responsive interfaces with HTML, CSS and JavaScript</li>
-            <li>Assisted in database design and integration</li>
-          </ul>
+          {cv.experience.length > 0 && (
+            <>
+              <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5 mt-3">
+                Work Experience
+              </p>
+              {cv.experience.map((exp) => (
+                <div key={exp.id} className="mt-1.5 first:mt-0">
+                  <p className="text-[7.5px] font-semibold">
+                    {exp.role} | {exp.company}{" "}
+                    <span className="float-right font-normal text-[var(--brown-500)]">
+                      {exp.start} – {exp.current ? "Present" : exp.end}
+                    </span>
+                  </p>
+                  {exp.bullets.length > 0 && (
+                    <ul className="list-disc ml-3 text-[7px] text-[var(--brown-500)] mt-0.5 space-y-0.5">
+                      {exp.bullets.map((b, i) => (
+                        <li key={i}>{b}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
 
-          <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5 mt-3">
-            Education
-          </p>
-          <p className="text-[7.5px]">
-            BSc. Electrical &amp; Electronics Engineering
-          </p>
-          <p className="text-[7px] text-[var(--brown-500)]">
-            University of Nairobi | 2016 – 2020
-          </p>
+          {cv.education.length > 0 && (
+            <>
+              <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5 mt-3">
+                Education
+              </p>
+              {cv.education.map((ed) => (
+                <div key={ed.id}>
+                  <p className="text-[7.5px]">{ed.degree}</p>
+                  <p className="text-[7px] text-[var(--brown-500)]">
+                    {ed.school}
+                    {ed.school && (ed.start || ed.end) ? " | " : ""}
+                    {ed.start} {ed.start && ed.end ? "–" : ""} {ed.end}
+                  </p>
+                </div>
+              ))}
+            </>
+          )}
         </div>
 
         <div>
-          <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5">
-            Skills
-          </p>
-          <ul className="text-[7px] text-[var(--brown-500)] space-y-0.5">
-            <li>JavaScript</li>
-            <li>React</li>
-            <li>Node.js</li>
-            <li>Python</li>
-            <li>Project Management</li>
-            <li>Problem Solving</li>
-          </ul>
-          <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5 mt-3">
-            Languages
-          </p>
-          <p className="text-[7px] text-[var(--brown-500)]">English (Fluent)</p>
-          <p className="text-[7px] text-[var(--brown-500)]">Kiswahili (Native)</p>
+          {cv.skills.length > 0 && (
+            <>
+              <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5">
+                Skills
+              </p>
+              <ul className="text-[7px] text-[var(--brown-500)] space-y-0.5">
+                {cv.skills.map((s) => (
+                  <li key={s.id}>{s.name}</li>
+                ))}
+              </ul>
+            </>
+          )}
+
+          {cv.languages.length > 0 && (
+            <>
+              <p className="uppercase tracking-wide text-[8px] text-[var(--gold-dark)] font-semibold border-b border-[var(--line)] pb-1 mb-1.5 mt-3">
+                Languages
+              </p>
+              {cv.languages.map((l) => (
+                <p key={l.id} className="text-[7px] text-[var(--brown-500)]">
+                  {l.name} ({l.level})
+                </p>
+              ))}
+            </>
+          )}
         </div>
       </div>
     </div>

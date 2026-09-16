@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { TEMPLATES } from "@/lib/templates";
-import TemplateThumb from "@/components/cv-templates/TemplateThumb";
+import TemplatePreview from "@/components/cv-templates/TemplatePreview";
+import { getAllTemplateSettings } from "@/lib/templateSettings";
 
-export default function TemplatesPreview() {
+export default async function TemplatesPreview() {
+  const settings = await getAllTemplateSettings();
+
   return (
     <section className="max-w-7xl mx-auto px-6 sm:px-10 py-20">
       <div className="flex items-end justify-between mb-10">
@@ -30,7 +33,7 @@ export default function TemplatesPreview() {
         {TEMPLATES.map((t) => (
           <div key={t.id} className="group">
             <div className="rounded-lg overflow-hidden border border-[var(--line)] bg-[var(--paper)] shadow-sm aspect-[3/4] group-hover:shadow-md transition-shadow">
-              <TemplateThumb templateId={t.id} />
+              <TemplatePreview templateId={t.id} settings={settings[t.id]} />
             </div>
             <p className="mt-3 text-[15px] text-[var(--brown-900)] font-medium">
               {t.name}

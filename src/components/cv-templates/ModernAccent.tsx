@@ -4,7 +4,7 @@ import { CVSection, LIGHT_STYLE, splitSections, Avatar } from "./shared";
 const ASIDE_STYLE = {
   ...LIGHT_STYLE,
   titleClass:
-    "text-[10px] tracking-[0.12em] uppercase font-semibold text-[#241a10] pb-1 mb-2 border-b border-[#c9974a]",
+    "text-[10px] tracking-[0.12em] uppercase font-semibold text-[#241a10] pb-1 mb-2 border-b border-[var(--tpl-accent)]",
 };
 
 export default function ModernAccent({ cv }: { cv: CVData }) {
@@ -19,7 +19,7 @@ export default function ModernAccent({ cv }: { cv: CVData }) {
         >
           {cv.fullName || "Your Name"}
         </p>
-        <p className="text-[12px] text-[#a97c33] mt-1">{cv.jobTitle}</p>
+        <p className="text-[12px] text-[var(--tpl-accent-dark)] mt-1">{cv.jobTitle}</p>
         <p className="text-[9.5px] text-[#6f5a41] mt-1.5 mb-4">
           {[cv.email, cv.phone, cv.location, cv.website].filter(Boolean).join("  ·  ")}
         </p>

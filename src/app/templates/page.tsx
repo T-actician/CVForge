@@ -2,9 +2,14 @@ import Link from "next/link";
 import Header from "@/components/landing/Header";
 import Footer from "@/components/landing/Footer";
 import { TEMPLATES } from "@/lib/templates";
-import TemplateThumb from "@/components/cv-templates/TemplateThumb";
+import TemplatePreview from "@/components/cv-templates/TemplatePreview";
+import { getAllTemplateSettings } from "@/lib/templateSettings";
 
-export default function TemplatesPage() {
+export const dynamic = "force-dynamic";
+
+export default async function TemplatesPage() {
+  const settings = await getAllTemplateSettings();
+
   return (
     <main className="bg-[var(--cream)] min-h-screen">
       <Header />
@@ -24,7 +29,7 @@ export default function TemplatesPage() {
           {TEMPLATES.map((t) => (
             <div key={t.id} className="group">
               <div className="rounded-lg overflow-hidden border border-[var(--line)] bg-[var(--paper)] shadow-sm aspect-[3/4] group-hover:shadow-md group-hover:border-[var(--gold)] transition-all">
-                <TemplateThumb templateId={t.id} />
+                <TemplatePreview templateId={t.id} settings={settings[t.id]} />
               </div>
               <p className="mt-3 text-[16px] text-[var(--brown-900)] font-medium">
                 {t.name}

@@ -2,9 +2,14 @@
 
 import { useCVStore } from "@/store/cvStore";
 import { TEMPLATES } from "@/lib/templates";
-import TemplateThumb from "@/components/cv-templates/TemplateThumb";
+import TemplatePreview from "@/components/cv-templates/TemplatePreview";
+import { AllTemplateSettings } from "@/lib/templateSettings";
 
-export default function TemplateSwitcher() {
+export default function TemplateSwitcher({
+  settings,
+}: {
+  settings?: AllTemplateSettings;
+}) {
   const { templateId, setTemplateId } = useCVStore();
 
   return (
@@ -20,7 +25,7 @@ export default function TemplateSwitcher() {
           }`}
           title={t.name}
         >
-          <TemplateThumb templateId={t.id} />
+          <TemplatePreview templateId={t.id} settings={settings?.[t.id]} />
         </button>
       ))}
     </div>

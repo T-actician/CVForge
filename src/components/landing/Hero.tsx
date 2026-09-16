@@ -62,10 +62,7 @@ export default function Hero({ config }: { config: SiteConfig }) {
           <div className="relative mx-auto max-w-[560px]">
             <div className="rounded-t-xl bg-[#26201a] p-3 pb-0 shadow-2xl">
               <div className="rounded-t-lg bg-[#fbf6ec] aspect-[16/10.3] overflow-hidden">
-                <MiniCVMockup
-                  name={config.heroPersonName}
-                  title={config.heroPersonTitle}
-                />
+                <MiniCVMockup cv={config.heroCV} />
               </div>
             </div>
             <div className="h-3 rounded-b-md bg-gradient-to-b from-[#3a2f24] to-[#1c1712] mx-[-6px]" />

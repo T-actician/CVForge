@@ -9,16 +9,30 @@ export default function ImageUploadField({
   value,
   onChange,
   folder,
+  fieldKey,
 }: {
   label: string;
   value: string;
   onChange: (url: string) => void;
   folder: string;
+  fieldKey: string;
 }) {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  // Persists just this one field immediately — delete/replace must not wait
+  // for the page's main "Save changes" button, or the old file never makes
+  // it into Trash until the admin happens to click Save.
+  const persist = async (newValue: string) => {
+    await fetch("/api/admin/config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ [fieldKey]: newValue }),
+    });
+    onChange(newValue);
+  };
 
   const handleFile = async (file: File | null) => {
     if (!file) return;
@@ -49,7 +63,7 @@ export default function ImageUploadField({
         xhr.onerror = () => reject(new Error("Upload failed."));
         xhr.send(formData);
       });
-      onChange(data.url);
+      await persist(data.url);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed.");
     } finally {
@@ -117,7 +131,7 @@ export default function ImageUploadField({
         confirmLabel="Move to Trash"
         danger
         onConfirm={() => {
-          onChange("");
+          persist("");
           setConfirmDelete(false);
         }}
         onCancel={() => setConfirmDelete(false)}

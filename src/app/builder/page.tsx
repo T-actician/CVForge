@@ -13,11 +13,20 @@ import TemplateSwitcher from "@/components/builder/TemplateSwitcher";
 import AtsPanel from "@/components/builder/AtsPanel";
 import DownloadButton from "@/components/builder/DownloadButton";
 import CVRenderer from "@/components/cv-templates/CVRenderer";
+import { AllTemplateSettings } from "@/lib/templateSettings";
 
 function BuilderInner() {
   const params = useSearchParams();
   const { cv, templateId, setTemplateId, setCV } = useCVStore();
   const [tab, setTab] = useState<"content" | "design" | "ats">("content");
+  const [templateSettings, setTemplateSettings] = useState<AllTemplateSettings>({});
+
+  useEffect(() => {
+    fetch("/api/admin/template-settings")
+      .then((r) => r.json())
+      .then(setTemplateSettings)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const t = params.get("template");
@@ -78,7 +87,7 @@ function BuilderInner() {
                 <p className="text-[13px] text-[var(--brown-500)] mb-3">
                   Switch templates anytime — your details stay intact.
                 </p>
-                <TemplateSwitcher />
+                <TemplateSwitcher settings={templateSettings} />
               </div>
             )}
             {tab === "ats" && <AtsPanel />}
@@ -94,7 +103,7 @@ function BuilderInner() {
               marginBottom: -1123 * 0.38,
             }}
           >
-            <CVRenderer templateId={templateId} cv={cv} />
+            <CVRenderer templateId={templateId} cv={cv} settings={templateSettings[templateId]} />
           </div>
         </div>
       </div>

@@ -6,7 +6,7 @@ export default function Elegant({ cv }: { cv: CVData }) {
 
   return (
     <div className="bg-[#fffdf8] text-[#241a10] p-10 font-sans w-full h-full">
-      <div className="flex items-end justify-between pb-4 border-b-2 border-[#c9974a]">
+      <div className="flex items-end justify-between pb-4 border-b-2 border-[var(--tpl-accent)]">
         <div>
           <p
             className="text-[24px] leading-tight"
@@ -14,7 +14,7 @@ export default function Elegant({ cv }: { cv: CVData }) {
           >
             {cv.fullName || "Your Name"}
           </p>
-          <p className="text-[12px] text-[#a97c33] mt-1">{cv.jobTitle}</p>
+          <p className="text-[12px] text-[var(--tpl-accent-dark)] mt-1">{cv.jobTitle}</p>
         </div>
         <div className="text-right text-[9.5px] text-[#6f5a41] leading-relaxed">
           {cv.email && <p>{cv.email}</p>}

@@ -19,7 +19,7 @@ export default function MinimalClean({ cv }: { cv: CVData }) {
         >
           {cv.fullName || "Your Name"}
         </p>
-        <p className="text-[12px] text-[#a97c33] mt-1">{cv.jobTitle}</p>
+        <p className="text-[12px] text-[var(--tpl-accent-dark)] mt-1">{cv.jobTitle}</p>
         <p className="text-[9.5px] text-[#6f5a41] mt-2">
           {[cv.email, cv.phone, cv.location, cv.website].filter(Boolean).join("   ·   ")}
         </p>

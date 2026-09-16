@@ -46,19 +46,19 @@ interface TitleStyle {
 
 export const LIGHT_STYLE: TitleStyle = {
   titleClass:
-    "text-[10.5px] tracking-[0.12em] uppercase font-semibold text-[#a97c33] pb-1 mb-2 border-b border-[#e6dcc6]",
+    "text-[10.5px] tracking-[0.12em] uppercase font-semibold text-[var(--tpl-accent-dark)] pb-1 mb-2 border-b border-[#e6dcc6]",
   textClass: "text-[#33261a]",
   subTextClass: "text-[#6f5a41]",
-  accentClass: "text-[#a97c33]",
+  accentClass: "text-[var(--tpl-accent-dark)]",
   dividerClass: "border-[#e6dcc6]",
 };
 
 export const DARK_STYLE: TitleStyle = {
   titleClass:
-    "text-[10px] tracking-[0.12em] uppercase font-semibold text-[#e4c78a] pb-1 mb-2 border-b border-white/15",
+    "text-[10px] tracking-[0.12em] uppercase font-semibold text-[var(--tpl-accent-light)] pb-1 mb-2 border-b border-white/15",
   textClass: "text-white",
   subTextClass: "text-white/65",
-  accentClass: "text-[#e4c78a]",
+  accentClass: "text-[var(--tpl-accent-light)]",
   dividerClass: "border-white/15",
 };
 
