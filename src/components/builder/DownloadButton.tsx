@@ -27,15 +27,31 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
         import("jspdf"),
       ]);
 
+      // Capture at high pixel density (SCALE) for a crisp result, but declare
+      // the PDF page at the *original* unscaled size — not canvas.width /
+      // canvas.height. Matching the page to the scaled-up canvas made every
+      // exported CV several times larger than a real page (jsPDF's "px" unit
+      // is 1/96in), so viewers had to shrink it for normal viewing and
+      // re-magnify it on zoom — since it's a flattened raster, that
+      // round-trip is exactly what looked soft, photo included. Keeping the
+      // page at the true size while the embedded raster has extra pixel
+      // density is what actually makes zooming in look sharp.
+      const SCALE = 3;
       const canvas = await html2canvas(exportRef.current, {
-        scale: 2,
+        scale: SCALE,
         useCORS: true,
         backgroundColor: "#ffffff",
       });
 
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF({ unit: "px", format: [canvas.width, canvas.height] });
-      pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+      const pageWidth = canvas.width / SCALE;
+      const pageHeight = canvas.height / SCALE;
+      const pdf = new jsPDF({
+        unit: "px",
+        format: [pageWidth, pageHeight],
+        hotfixes: ["px_scaling"],
+      });
+      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight, undefined, "FAST");
 
       const fileBaseName = (cv.fullName || "cv").replace(/\s+/g, "_");
       pdf.save(`${fileBaseName}-Vitae.pdf`);
