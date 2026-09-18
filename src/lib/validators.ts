@@ -42,3 +42,12 @@ export function contactError(value: string): string {
   if (!value.trim()) return "";
   return isValidContact(value) ? "" : "Enter a valid phone number or email address.";
 }
+
+// A "contact" field accepts either a phone or an email. Only restrict
+// keystrokes when the value looks like a phone number in progress (digits/+
+// only so far) — once it contains a letter or "@" it's being typed as an
+// email, so leave it untouched.
+export function sanitizeContactInput(value: string): string {
+  const looksLikeEmailInProgress = /[a-zA-Z@]/.test(value);
+  return looksLikeEmailInProgress ? value : sanitizePhoneInput(value);
+}

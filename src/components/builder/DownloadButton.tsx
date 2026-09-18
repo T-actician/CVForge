@@ -33,9 +33,15 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       // placing each on its own standard A4 page gives a normal, properly
       // paginated, scrollable/printable PDF instead of one oversized custom
       // page (which is what made viewers unable to scroll it normally).
-      const SCALE = 3;
-      const PAGE_WIDTH = 794;
+      const SCALE = 4;
       const PAGE_HEIGHT = 1123;
+      // Work entirely in already-scaled, already-integer canvas pixel space
+      // below (sy/sHeight/canvas.width/canvas.height) rather than dividing
+      // by SCALE and multiplying back — that round-trip produced fractional
+      // pixel dimensions on partial pages, and a canvas copy between
+      // mismatched fractional/rounded dimensions gets silently smoothed by
+      // the browser, which is what was actually causing the blur.
+      const scaledPageHeight = Math.round(PAGE_HEIGHT * SCALE);
 
       const canvas = await html2canvas(exportRef.current, {
         scale: SCALE,
@@ -43,36 +49,25 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
         backgroundColor: "#ffffff",
       });
 
-      const contentHeight = canvas.height / SCALE; // unscaled, in design px
-      const pageCount = Math.max(1, Math.ceil(contentHeight / PAGE_HEIGHT));
+      const pageCount = Math.max(1, Math.ceil(canvas.height / scaledPageHeight));
 
       const pdf = new jsPDF({ unit: "mm", format: "a4" });
       const mmWidth = pdf.internal.pageSize.getWidth();
       const mmHeight = pdf.internal.pageSize.getHeight();
 
       for (let i = 0; i < pageCount; i++) {
-        const sliceStart = i * PAGE_HEIGHT;
-        const sliceEnd = Math.min(sliceStart + PAGE_HEIGHT, contentHeight);
-        const sliceHeight = sliceEnd - sliceStart;
+        const sy = i * scaledPageHeight;
+        const sHeight = Math.min(scaledPageHeight, canvas.height - sy);
 
         const sliceCanvas = document.createElement("canvas");
         sliceCanvas.width = canvas.width;
-        sliceCanvas.height = sliceHeight * SCALE;
+        sliceCanvas.height = sHeight;
         const ctx = sliceCanvas.getContext("2d")!;
-        ctx.drawImage(
-          canvas,
-          0,
-          sliceStart * SCALE,
-          canvas.width,
-          sliceHeight * SCALE,
-          0,
-          0,
-          canvas.width,
-          sliceHeight * SCALE
-        );
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(canvas, 0, sy, canvas.width, sHeight, 0, 0, canvas.width, sHeight);
 
         if (i > 0) pdf.addPage();
-        const sliceImgHeightMm = (sliceHeight / PAGE_HEIGHT) * mmHeight;
+        const sliceImgHeightMm = (sHeight / scaledPageHeight) * mmHeight;
         pdf.addImage(
           sliceCanvas.toDataURL("image/png"),
           "PNG",

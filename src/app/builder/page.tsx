@@ -20,6 +20,12 @@ function BuilderInner() {
   const { cv, templateId, setTemplateId, setCV } = useCVStore();
   const [tab, setTab] = useState<"content" | "design" | "ats">("content");
   const [templateSettings, setTemplateSettings] = useState<AllTemplateSettings>({});
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    useCVStore.persist.rehydrate();
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     fetch("/api/admin/template-settings")
@@ -29,10 +35,11 @@ function BuilderInner() {
   }, []);
 
   useEffect(() => {
+    if (!hydrated) return;
     const t = params.get("template");
     if (t) setTemplateId(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hydrated]);
 
   const templateName = TEMPLATES.find((t) => t.id === templateId)?.name;
   const score = completenessScore(cv);
@@ -53,6 +60,9 @@ function BuilderInner() {
           </span>
         </div>
         <div className="flex items-center gap-4">
+          <span className="hidden md:block text-[11.5px] text-[var(--brown-300)]">
+            Auto-saved on this device
+          </span>
           <button
             onClick={() => setCV(sampleCV())}
             className="hidden sm:flex items-center gap-1.5 text-[13px] text-[var(--brown-500)] hover:text-[var(--gold-dark)]"

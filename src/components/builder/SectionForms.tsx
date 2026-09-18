@@ -12,7 +12,7 @@ import {
 } from "@/lib/cvTypes";
 import { Field, TextAreaField, SmallButton } from "./FormControls";
 import { Plus, Trash2 } from "lucide-react";
-import { contactError } from "@/lib/validators";
+import { contactError, sanitizeContactInput } from "@/lib/validators";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -312,7 +312,7 @@ export function ReferencesEditor() {
           <Field
             label="Contact"
             value={r.contact}
-            onChange={(v) => update(r.id, { contact: v })}
+            onChange={(v) => update(r.id, { contact: sanitizeContactInput(v) })}
             placeholder="Phone or email"
             error={contactError(r.contact)}
           />

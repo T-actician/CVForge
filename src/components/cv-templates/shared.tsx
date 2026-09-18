@@ -37,10 +37,11 @@ export function hasContent(cv: CVData, type: SectionType): boolean {
 }
 
 // Renders free-text description/details fields (Project description,
-// Education details) so that if the user typed multiple lines — with or
-// without their own "-"/"•" prefix — each line becomes a real bullet,
-// instead of the browser collapsing all newlines into one cramped
-// paragraph (the default behavior for plain text in HTML).
+// Education details) so that bullet points show as a real list instead of
+// one cramped paragraph. Handles both cases: text typed as separate lines
+// (split on "\n"), and text typed as one line with "•" used as an inline
+// separator (older data, or pasted content) — split on whichever is
+// actually present, then strip any leading "-"/"•"/"*" the user also typed.
 export function MultilineText({
   text,
   className,
@@ -48,8 +49,9 @@ export function MultilineText({
   text: string;
   className: string;
 }) {
+  const delimiter = text.includes("\n") ? "\n" : "•";
   const lines = text
-    .split("\n")
+    .split(delimiter)
     .map((l) => l.replace(/^\s*[-•*]\s*/, "").trim())
     .filter(Boolean);
 
@@ -206,15 +208,16 @@ export function CVSection({
         <div className="space-y-2.5">
           {cv.projects.map((p) => (
             <div key={p.id}>
-              <p className={`text-[11px] font-semibold ${s.textClass}`}>
-                {p.name}
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className={`text-[11px] font-semibold ${s.textClass}`}>{p.name}</p>
                 {p.link && (
-                  <span className={`font-normal text-[9.5px] ${s.subTextClass}`}>
-                    {" "}
-                    · {p.link}
+                  <span
+                    className={`text-[8.5px] px-2 py-0.5 rounded-full border ${s.dividerClass} ${s.subTextClass}`}
+                  >
+                    {p.link}
                   </span>
                 )}
-              </p>
+              </div>
               {p.description && (
                 <MultilineText text={p.description} className={`text-[10px] mt-0.5 ${s.subTextClass}`} />
               )}
