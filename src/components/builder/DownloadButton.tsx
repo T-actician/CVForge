@@ -27,31 +27,63 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
         import("jspdf"),
       ]);
 
-      // Capture at high pixel density (SCALE) for a crisp result, but declare
-      // the PDF page at the *original* unscaled size — not canvas.width /
-      // canvas.height. Matching the page to the scaled-up canvas made every
-      // exported CV several times larger than a real page (jsPDF's "px" unit
-      // is 1/96in), so viewers had to shrink it for normal viewing and
-      // re-magnify it on zoom — since it's a flattened raster, that
-      // round-trip is exactly what looked soft, photo included. Keeping the
-      // page at the true size while the embedded raster has extra pixel
-      // density is what actually makes zooming in look sharp.
+      // Capture at high pixel density (SCALE) for a crisp result. 794×1123
+      // is A4 at 96dpi — the same design size used for template previews —
+      // so slicing the tall capture into successive 1123px-tall strips and
+      // placing each on its own standard A4 page gives a normal, properly
+      // paginated, scrollable/printable PDF instead of one oversized custom
+      // page (which is what made viewers unable to scroll it normally).
       const SCALE = 3;
+      const PAGE_WIDTH = 794;
+      const PAGE_HEIGHT = 1123;
+
       const canvas = await html2canvas(exportRef.current, {
         scale: SCALE,
         useCORS: true,
         backgroundColor: "#ffffff",
       });
 
-      const imgData = canvas.toDataURL("image/png");
-      const pageWidth = canvas.width / SCALE;
-      const pageHeight = canvas.height / SCALE;
-      const pdf = new jsPDF({
-        unit: "px",
-        format: [pageWidth, pageHeight],
-        hotfixes: ["px_scaling"],
-      });
-      pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight, undefined, "FAST");
+      const contentHeight = canvas.height / SCALE; // unscaled, in design px
+      const pageCount = Math.max(1, Math.ceil(contentHeight / PAGE_HEIGHT));
+
+      const pdf = new jsPDF({ unit: "mm", format: "a4" });
+      const mmWidth = pdf.internal.pageSize.getWidth();
+      const mmHeight = pdf.internal.pageSize.getHeight();
+
+      for (let i = 0; i < pageCount; i++) {
+        const sliceStart = i * PAGE_HEIGHT;
+        const sliceEnd = Math.min(sliceStart + PAGE_HEIGHT, contentHeight);
+        const sliceHeight = sliceEnd - sliceStart;
+
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = sliceHeight * SCALE;
+        const ctx = sliceCanvas.getContext("2d")!;
+        ctx.drawImage(
+          canvas,
+          0,
+          sliceStart * SCALE,
+          canvas.width,
+          sliceHeight * SCALE,
+          0,
+          0,
+          canvas.width,
+          sliceHeight * SCALE
+        );
+
+        if (i > 0) pdf.addPage();
+        const sliceImgHeightMm = (sliceHeight / PAGE_HEIGHT) * mmHeight;
+        pdf.addImage(
+          sliceCanvas.toDataURL("image/png"),
+          "PNG",
+          0,
+          0,
+          mmWidth,
+          sliceImgHeightMm,
+          undefined,
+          "FAST"
+        );
+      }
 
       const fileBaseName = (cv.fullName || "cv").replace(/\s+/g, "_");
       pdf.save(`${fileBaseName}-Vitae.pdf`);

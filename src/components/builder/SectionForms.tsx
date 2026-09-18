@@ -12,6 +12,7 @@ import {
 } from "@/lib/cvTypes";
 import { Field, TextAreaField, SmallButton } from "./FormControls";
 import { Plus, Trash2 } from "lucide-react";
+import { contactError } from "@/lib/validators";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
@@ -147,7 +148,13 @@ export function EducationEditor() {
             <Field label="Start" value={ed.start} onChange={(v) => update(ed.id, { start: v })} placeholder="2016" />
             <Field label="End" value={ed.end} onChange={(v) => update(ed.id, { end: v })} placeholder="2020" />
           </div>
-          <Field label="Details (optional)" value={ed.details} onChange={(v) => update(ed.id, { details: v })} />
+          <TextAreaField
+            label="Details (optional)"
+            value={ed.details}
+            onChange={(v) => update(ed.id, { details: v })}
+            rows={2}
+            placeholder={"One line per point — each becomes a bullet.\nOr write one paragraph for plain text."}
+          />
           <SmallButton variant="danger" onClick={() => remove(ed.id)}>
             <Trash2 size={13} /> Remove
           </SmallButton>
@@ -204,7 +211,13 @@ export function ProjectsEditor() {
         <div key={p.id} className="rounded-lg border border-[var(--line)] p-4 space-y-3">
           <Field label="Project name" value={p.name} onChange={(v) => update(p.id, { name: v })} />
           <Field label="Link (optional)" value={p.link} onChange={(v) => update(p.id, { link: v })} />
-          <TextAreaField label="Description" value={p.description} onChange={(v) => update(p.id, { description: v })} rows={2} />
+          <TextAreaField
+            label="Description"
+            value={p.description}
+            onChange={(v) => update(p.id, { description: v })}
+            rows={3}
+            placeholder={"One line per point — each becomes a bullet.\nOr write one paragraph for plain text."}
+          />
           <SmallButton variant="danger" onClick={() => remove(p.id)}>
             <Trash2 size={13} /> Remove
           </SmallButton>
@@ -296,7 +309,13 @@ export function ReferencesEditor() {
         <div key={r.id} className="rounded-lg border border-[var(--line)] p-4 space-y-3">
           <Field label="Name" value={r.name} onChange={(v) => update(r.id, { name: v })} />
           <Field label="Role / relationship" value={r.role} onChange={(v) => update(r.id, { role: v })} />
-          <Field label="Contact" value={r.contact} onChange={(v) => update(r.id, { contact: v })} />
+          <Field
+            label="Contact"
+            value={r.contact}
+            onChange={(v) => update(r.id, { contact: v })}
+            placeholder="Phone or email"
+            error={contactError(r.contact)}
+          />
           <SmallButton variant="danger" onClick={() => remove(r.id)}>
             <Trash2 size={13} /> Remove
           </SmallButton>

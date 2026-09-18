@@ -36,6 +36,38 @@ export function hasContent(cv: CVData, type: SectionType): boolean {
   }
 }
 
+// Renders free-text description/details fields (Project description,
+// Education details) so that if the user typed multiple lines — with or
+// without their own "-"/"•" prefix — each line becomes a real bullet,
+// instead of the browser collapsing all newlines into one cramped
+// paragraph (the default behavior for plain text in HTML).
+export function MultilineText({
+  text,
+  className,
+}: {
+  text: string;
+  className: string;
+}) {
+  const lines = text
+    .split("\n")
+    .map((l) => l.replace(/^\s*[-•*]\s*/, "").trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) return null;
+
+  if (lines.length === 1) {
+    return <p className={className}>{lines[0]}</p>;
+  }
+
+  return (
+    <ul className={`list-disc ml-4 space-y-0.5 ${className}`}>
+      {lines.map((l, i) => (
+        <li key={i}>{l}</li>
+      ))}
+    </ul>
+  );
+}
+
 interface TitleStyle {
   titleClass: string;
   textClass: string;
@@ -140,9 +172,7 @@ export function CVSection({
                 {ed.location ? ` · ${ed.location}` : ""}
               </p>
               {ed.details && (
-                <p className={`text-[10px] mt-0.5 ${s.subTextClass}`}>
-                  {ed.details}
-                </p>
+                <MultilineText text={ed.details} className={`text-[10px] mt-0.5 ${s.subTextClass}`} />
               )}
             </div>
           ))}
@@ -186,9 +216,7 @@ export function CVSection({
                 )}
               </p>
               {p.description && (
-                <p className={`text-[10px] mt-0.5 ${s.subTextClass}`}>
-                  {p.description}
-                </p>
+                <MultilineText text={p.description} className={`text-[10px] mt-0.5 ${s.subTextClass}`} />
               )}
             </div>
           ))}

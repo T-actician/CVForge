@@ -4,12 +4,14 @@ export function Field({
   onChange,
   placeholder,
   type = "text",
+  error,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
   type?: string;
+  error?: string;
 }) {
   return (
     <label className="block">
@@ -21,8 +23,13 @@ export function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-[13.5px] text-[var(--brown-900)] outline-none focus:border-[var(--gold)] transition-colors"
+        className={`w-full rounded-md border bg-[var(--paper)] px-3 py-2 text-[13.5px] text-[var(--brown-900)] outline-none transition-colors ${
+          error
+            ? "border-[#a5473a] focus:border-[#a5473a]"
+            : "border-[var(--line)] focus:border-[var(--gold)]"
+        }`}
       />
+      {error && <span className="block text-[11px] text-[#a5473a] mt-1">{error}</span>}
     </label>
   );
 }
