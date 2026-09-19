@@ -37,13 +37,14 @@ export function hasContent(cv: CVData, type: SectionType): boolean {
 }
 
 // Renders free-text description/details fields (Project description,
-// Education details). If the text is a plain paragraph, it stays a
-// paragraph. If it has bullet points after the paragraph (or is only bullet
-// points), the paragraph part — if any — stays a paragraph and only the
-// actual bulleted part becomes a real <ul> list underneath it. A segment
-// only counts as "bulleted" once the text has switched into using an actual
-// separator (newline, or "•" used inline); the first segment before that
-// switch is always treated as introductory prose, not a bullet.
+// Education details). A line becomes a bullet ONLY if it's explicitly
+// marked as one — starts with "-", "*", "•", or "1."/"1)" — never by its
+// position in the text. Any line without a marker stays part of the
+// flowing paragraph exactly as typed, even if it comes after some bullets,
+// and even if the user's paragraph itself wraps across several physical
+// lines (those get rejoined into one paragraph, not scattered into bullets).
+const BULLET_MARKER_RE = /^\s*(?:[-•*]|\d+[.)])\s+/;
+
 export function MultilineText({
   text,
   className,
@@ -51,32 +52,61 @@ export function MultilineText({
   text: string;
   className: string;
 }) {
-  const startsWithBulletMarker = /^\s*[-•*]/.test(text);
-  const delimiter = text.includes("\n") ? "\n" : "•";
-  const parts = text
-    .split(delimiter)
-    .map((p) => p.trim())
-    .filter(Boolean);
+  type Block = { type: "p" | "ul"; lines: string[] };
+  const blocks: Block[] = [];
+  let forceNewBlock = false;
 
-  if (parts.length === 0) return null;
+  const push = (type: Block["type"], line: string) => {
+    const last = blocks[blocks.length - 1];
+    if (!forceNewBlock && last && last.type === type) {
+      last.lines.push(line);
+    } else {
+      blocks.push({ type, lines: [line] });
+    }
+    forceNewBlock = false;
+  };
 
-  const paragraph = startsWithBulletMarker ? null : parts[0];
-  const bulletParts = (paragraph ? parts.slice(1) : parts)
-    .map((p) => p.replace(/^\s*[-•*]\s*/, "").trim())
-    .filter(Boolean);
-
-  if (bulletParts.length === 0) {
-    return <p className={className}>{paragraph ?? parts.join(" ")}</p>;
+  if (text.includes("\n")) {
+    for (const raw of text.split("\n")) {
+      const line = raw.trim();
+      if (!line) {
+        forceNewBlock = true;
+        continue;
+      }
+      const m = line.match(BULLET_MARKER_RE);
+      if (m) push("ul", line.slice(m[0].length).trim());
+      else push("p", line);
+    }
+  } else {
+    // No real line breaks — legacy data where "•" was typed as an inline
+    // separator between bullet points rather than a real newline. Anything
+    // before the first "•" is prose; each part after it is a bullet.
+    const parts = text.split("•").map((p) => p.trim()).filter(Boolean);
+    parts.forEach((part, i) => {
+      const m = part.match(BULLET_MARKER_RE);
+      if (m) push("ul", part.slice(m[0].length).trim());
+      else if (i === 0) push("p", part);
+      else push("ul", part);
+    });
   }
+
+  if (blocks.length === 0) return null;
 
   return (
     <>
-      {paragraph && <p className={className}>{paragraph}</p>}
-      <ul className={`list-disc ml-4 space-y-0.5 ${paragraph ? "mt-1" : ""} ${className}`}>
-        {bulletParts.map((b, i) => (
-          <li key={i}>{b}</li>
-        ))}
-      </ul>
+      {blocks.map((b, i) =>
+        b.type === "p" ? (
+          <p key={i} className={`${className} ${i > 0 ? "mt-1" : ""}`}>
+            {b.lines.join(" ")}
+          </p>
+        ) : (
+          <ul key={i} className={`list-disc ml-4 space-y-0.5 mt-1 ${className}`}>
+            {b.lines.map((l, j) => (
+              <li key={j}>{l}</li>
+            ))}
+          </ul>
+        )
+      )}
     </>
   );
 }
