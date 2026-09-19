@@ -27,21 +27,18 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
         import("jspdf"),
       ]);
 
-      // Capture at high pixel density (SCALE) for a crisp result. 794×1123
-      // is A4 at 96dpi — the same design size used for template previews —
-      // so slicing the tall capture into successive 1123px-tall strips and
-      // placing each on its own standard A4 page gives a normal, properly
-      // paginated, scrollable/printable PDF instead of one oversized custom
-      // page (which is what made viewers unable to scroll it normally).
+      // Capture at high pixel density (SCALE) for a crisp result, then embed
+      // it as ONE continuous page sized to the CV's actual content — not
+      // split across multiple A4 pages. Page size uses "mm" units with the
+      // real A4 width (210mm) and a height computed to match the content's
+      // true aspect ratio, so it's a valid, normally-scrollable single page
+      // in any viewer (the earlier "0 of 0 pages" break came from using
+      // jsPDF's "px" unit combined with a hotfix flag — "mm" is the
+      // well-tested, reliable path). Embedding html2canvas's own canvas
+      // directly (no extra canvas-to-canvas copy) also removes any chance
+      // of the rounding-introduced blur from an intermediate copy step.
       const SCALE = 4;
-      const PAGE_HEIGHT = 1123;
-      // Work entirely in already-scaled, already-integer canvas pixel space
-      // below (sy/sHeight/canvas.width/canvas.height) rather than dividing
-      // by SCALE and multiplying back — that round-trip produced fractional
-      // pixel dimensions on partial pages, and a canvas copy between
-      // mismatched fractional/rounded dimensions gets silently smoothed by
-      // the browser, which is what was actually causing the blur.
-      const scaledPageHeight = Math.round(PAGE_HEIGHT * SCALE);
+      const PAGE_WIDTH_PX = 794; // design width used everywhere (A4 @ 96dpi)
 
       const canvas = await html2canvas(exportRef.current, {
         scale: SCALE,
@@ -49,36 +46,12 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
         backgroundColor: "#ffffff",
       });
 
-      const pageCount = Math.max(1, Math.ceil(canvas.height / scaledPageHeight));
+      const contentHeightPx = canvas.height / SCALE;
+      const mmWidth = 210; // A4 width
+      const mmHeight = (contentHeightPx / PAGE_WIDTH_PX) * mmWidth;
 
-      const pdf = new jsPDF({ unit: "mm", format: "a4" });
-      const mmWidth = pdf.internal.pageSize.getWidth();
-      const mmHeight = pdf.internal.pageSize.getHeight();
-
-      for (let i = 0; i < pageCount; i++) {
-        const sy = i * scaledPageHeight;
-        const sHeight = Math.min(scaledPageHeight, canvas.height - sy);
-
-        const sliceCanvas = document.createElement("canvas");
-        sliceCanvas.width = canvas.width;
-        sliceCanvas.height = sHeight;
-        const ctx = sliceCanvas.getContext("2d")!;
-        ctx.imageSmoothingEnabled = false;
-        ctx.drawImage(canvas, 0, sy, canvas.width, sHeight, 0, 0, canvas.width, sHeight);
-
-        if (i > 0) pdf.addPage();
-        const sliceImgHeightMm = (sHeight / scaledPageHeight) * mmHeight;
-        pdf.addImage(
-          sliceCanvas.toDataURL("image/png"),
-          "PNG",
-          0,
-          0,
-          mmWidth,
-          sliceImgHeightMm,
-          undefined,
-          "FAST"
-        );
-      }
+      const pdf = new jsPDF({ unit: "mm", format: [mmWidth, mmHeight] });
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, mmWidth, mmHeight, undefined, "FAST");
 
       const fileBaseName = (cv.fullName || "cv").replace(/\s+/g, "_");
       pdf.save(`${fileBaseName}-Vitae.pdf`);

@@ -37,11 +37,13 @@ export function hasContent(cv: CVData, type: SectionType): boolean {
 }
 
 // Renders free-text description/details fields (Project description,
-// Education details) so that bullet points show as a real list instead of
-// one cramped paragraph. Handles both cases: text typed as separate lines
-// (split on "\n"), and text typed as one line with "•" used as an inline
-// separator (older data, or pasted content) — split on whichever is
-// actually present, then strip any leading "-"/"•"/"*" the user also typed.
+// Education details). If the text is a plain paragraph, it stays a
+// paragraph. If it has bullet points after the paragraph (or is only bullet
+// points), the paragraph part — if any — stays a paragraph and only the
+// actual bulleted part becomes a real <ul> list underneath it. A segment
+// only counts as "bulleted" once the text has switched into using an actual
+// separator (newline, or "•" used inline); the first segment before that
+// switch is always treated as introductory prose, not a bullet.
 export function MultilineText({
   text,
   className,
@@ -49,24 +51,33 @@ export function MultilineText({
   text: string;
   className: string;
 }) {
+  const startsWithBulletMarker = /^\s*[-•*]/.test(text);
   const delimiter = text.includes("\n") ? "\n" : "•";
-  const lines = text
+  const parts = text
     .split(delimiter)
-    .map((l) => l.replace(/^\s*[-•*]\s*/, "").trim())
+    .map((p) => p.trim())
     .filter(Boolean);
 
-  if (lines.length === 0) return null;
+  if (parts.length === 0) return null;
 
-  if (lines.length === 1) {
-    return <p className={className}>{lines[0]}</p>;
+  const paragraph = startsWithBulletMarker ? null : parts[0];
+  const bulletParts = (paragraph ? parts.slice(1) : parts)
+    .map((p) => p.replace(/^\s*[-•*]\s*/, "").trim())
+    .filter(Boolean);
+
+  if (bulletParts.length === 0) {
+    return <p className={className}>{paragraph ?? parts.join(" ")}</p>;
   }
 
   return (
-    <ul className={`list-disc ml-4 space-y-0.5 ${className}`}>
-      {lines.map((l, i) => (
-        <li key={i}>{l}</li>
-      ))}
-    </ul>
+    <>
+      {paragraph && <p className={className}>{paragraph}</p>}
+      <ul className={`list-disc ml-4 space-y-0.5 ${paragraph ? "mt-1" : ""} ${className}`}>
+        {bulletParts.map((b, i) => (
+          <li key={i}>{b}</li>
+        ))}
+      </ul>
+    </>
   );
 }
 
