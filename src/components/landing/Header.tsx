@@ -24,7 +24,7 @@ export default function Header() {
   };
 
   return (
-    <header className="relative z-20 grid grid-cols-[1fr_auto_1fr] items-center px-6 sm:px-10 py-5 border-b border-[var(--line)]/70">
+    <header className="relative z-20 flex md:grid md:grid-cols-[1fr_auto_1fr] items-center justify-between px-6 sm:px-10 py-5 border-b border-[var(--line)]/70">
       <Link href="/" className="flex items-center gap-2.5 justify-self-start">
         <span className="flex h-9 w-9 items-center justify-center rounded-md bg-[var(--brown-900)] text-[var(--gold-light)]">
           <FileText size={18} strokeWidth={1.75} />
