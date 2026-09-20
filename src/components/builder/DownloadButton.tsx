@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Download, Loader2, Cloud, Check } from "lucide-react";
+import { Download, Loader2, Check, Coffee, X } from "lucide-react";
 import { useCVStore } from "@/store/cvStore";
 import CVRenderer from "@/components/cv-templates/CVRenderer";
 import { TemplateSettings } from "@/lib/templateSettings";
+import MpesaSupportCard from "@/components/shared/MpesaSupportCard";
 
 export default function DownloadButton({ settings }: { settings?: TemplateSettings }) {
   const { cv, templateId } = useCVStore();
@@ -12,6 +13,7 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
   const [loading, setLoading] = useState(false);
   const [cloudUrl, setCloudUrl] = useState("");
   const [error, setError] = useState("");
+  const [showSupport, setShowSupport] = useState(false);
 
   const handleDownload = async () => {
     if (!exportRef.current) return;
@@ -93,14 +95,23 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
   };
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       <button
         onClick={handleDownload}
         disabled={loading}
-        className="inline-flex items-center gap-2 rounded-md bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold)] px-5 py-2.5 text-[14px] text-white hover:brightness-105 transition disabled:opacity-60"
+        className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold)] px-3.5 py-2 text-[13px] text-white hover:brightness-105 transition disabled:opacity-60"
       >
-        {loading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
-        {loading ? "Preparing PDF…" : "Download PDF"}
+        {loading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+        {loading ? "Preparing…" : "Download PDF"}
+      </button>
+
+      <button
+        type="button"
+        onClick={() => setShowSupport(true)}
+        title="Support Vitae"
+        className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--line)] text-[var(--gold-dark)] hover:border-[var(--gold)] hover:bg-[var(--gold)]/10 transition-colors"
+      >
+        <Coffee size={15} />
       </button>
 
       {cloudUrl && (
@@ -113,11 +124,6 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
           <Check size={14} /> Saved to cloud
         </a>
       )}
-      {loading && (
-        <span className="hidden sm:flex items-center gap-1.5 text-[12.5px] text-[var(--brown-300)]">
-          <Cloud size={14} />
-        </span>
-      )}
       {error && <p className="text-[12.5px] text-[#a5473a]">{error}</p>}
 
       {/* Hidden full-resolution render used for crisp PDF export */}
@@ -126,6 +132,44 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
           <CVRenderer templateId={templateId} cv={cv} settings={settings} />
         </div>
       </div>
+
+      {showSupport && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+          onClick={() => setShowSupport(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-xl bg-[var(--paper)] border border-[var(--line)] shadow-xl p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setShowSupport(false)}
+              className="absolute top-4 right-4 text-[var(--brown-300)] hover:text-[var(--brown-900)]"
+            >
+              <X size={16} />
+            </button>
+            <p className="font-display text-[19px] text-[var(--brown-900)] mb-1.5">
+              Enjoying Vitae?
+            </p>
+            <p className="text-[13px] text-[var(--brown-500)] mb-4">
+              Vitae is free to use. If it's helping you land your next role,
+              a coffee goes a long way — then grab your PDF below.
+            </p>
+
+            <MpesaSupportCard />
+
+            <button
+              onClick={handleDownload}
+              disabled={loading}
+              className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-md bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold)] px-4 py-2.5 text-[14px] text-white hover:brightness-105 transition disabled:opacity-60"
+            >
+              {loading ? <Loader2 size={15} className="animate-spin" /> : <Download size={15} />}
+              {loading ? "Preparing PDF…" : "Download PDF"}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
