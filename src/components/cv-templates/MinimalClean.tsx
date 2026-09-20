@@ -1,5 +1,5 @@
 import { CVData } from "@/lib/cvTypes";
-import { CVSection, LIGHT_STYLE, splitSections } from "./shared";
+import { CVSection, LIGHT_STYLE, splitSections, ContactLine } from "./shared";
 
 const STYLE = {
   ...LIGHT_STYLE,
@@ -20,9 +20,7 @@ export default function MinimalClean({ cv }: { cv: CVData }) {
           {cv.fullName || "Your Name"}
         </p>
         <p className="text-[12px] text-[var(--tpl-accent-dark)] mt-1">{cv.jobTitle}</p>
-        <p className="text-[9.5px] text-[#6f5a41] mt-2">
-          {[cv.email, cv.phone, cv.location, cv.website].filter(Boolean).join("   ·   ")}
-        </p>
+        <ContactLine cv={cv} layout="inline" className="text-[9.5px] text-[#6f5a41] mt-2" />
       </div>
 
       <div className="mt-5 max-w-[560px] mx-auto">

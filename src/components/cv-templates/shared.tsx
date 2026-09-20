@@ -119,6 +119,69 @@ export function normalizeUrl(url: string): string {
   return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
+// Renders the candidate's contact line (email, phone, location, website,
+// portfolio) consistently across every template. Website and portfolio are
+// real clickable links (data-pdf-link makes them clickable in the exported
+// PDF too, see DownloadButton) — email/phone/location stay plain text.
+// "inline" joins everything on one line with "·" separators; "stacked"
+// gives each field its own line.
+export function ContactLine({
+  cv,
+  layout,
+  className,
+}: {
+  cv: CVData;
+  layout: "inline" | "stacked";
+  className: string;
+}) {
+  const items: { text: string; href?: string }[] = [
+    { text: cv.email },
+    { text: cv.phone },
+    { text: cv.location },
+    cv.website ? { text: cv.website, href: normalizeUrl(cv.website) } : null,
+    cv.portfolio ? { text: cv.portfolio, href: normalizeUrl(cv.portfolio) } : null,
+  ].filter((i): i is { text: string; href?: string } => Boolean(i && i.text));
+
+  if (items.length === 0) return null;
+
+  const renderItem = (item: (typeof items)[number], i: number) =>
+    item.href ? (
+      <a
+        key={i}
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-pdf-link={item.href}
+        className="hover:underline"
+      >
+        {item.text}
+      </a>
+    ) : (
+      <span key={i}>{item.text}</span>
+    );
+
+  if (layout === "stacked") {
+    return (
+      <div className={className}>
+        {items.map((item, i) => (
+          <p key={i}>{renderItem(item, i)}</p>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <p className={className}>
+      {items.map((item, i) => (
+        <span key={i}>
+          {i > 0 && "  ·  "}
+          {renderItem(item, i)}
+        </span>
+      ))}
+    </p>
+  );
+}
+
 interface TitleStyle {
   titleClass: string;
   textClass: string;

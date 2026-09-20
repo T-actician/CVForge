@@ -1,5 +1,5 @@
 import { CVData } from "@/lib/cvTypes";
-import { CVSection, LIGHT_STYLE, splitSections } from "./shared";
+import { CVSection, LIGHT_STYLE, splitSections, ContactLine } from "./shared";
 
 export default function Elegant({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages"]);
@@ -17,9 +17,7 @@ export default function Elegant({ cv }: { cv: CVData }) {
           <p className="text-[12px] text-[var(--tpl-accent-dark)] mt-1">{cv.jobTitle}</p>
         </div>
         <div className="text-right text-[9.5px] text-[#6f5a41] leading-relaxed">
-          {cv.email && <p>{cv.email}</p>}
-          {cv.phone && <p>{cv.phone}</p>}
-          {cv.location && <p>{cv.location}</p>}
+          <ContactLine cv={cv} layout="stacked" className="" />
         </div>
       </div>
 

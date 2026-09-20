@@ -15,9 +15,9 @@ export default function MiniCVMockup({ cv }: { cv: CVData }) {
               {cv.email && <span>{cv.email}</span>}
               {cv.phone && <span>{cv.phone}</span>}
             </div>
-            {(cv.location || cv.website) && (
+            {(cv.location || cv.website || cv.portfolio) && (
               <p className="text-[7.5px] text-[var(--brown-500)]">
-                {[cv.location, cv.website].filter(Boolean).join(" · ")}
+                {[cv.location, cv.website, cv.portfolio].filter(Boolean).join(" · ")}
               </p>
             )}
           </div>

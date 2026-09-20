@@ -1,5 +1,5 @@
 import { CVData } from "@/lib/cvTypes";
-import { CVSection, LIGHT_STYLE, splitSections, Avatar } from "./shared";
+import { CVSection, LIGHT_STYLE, splitSections, Avatar, ContactLine } from "./shared";
 
 const ASIDE_STYLE = {
   ...LIGHT_STYLE,
@@ -22,9 +22,7 @@ export default function CreativeProfessional({ cv }: { cv: CVData }) {
             {cv.fullName || "Your Name"}
           </p>
           <p className="text-[11px] text-[var(--tpl-accent-light)] mt-0.5">{cv.jobTitle}</p>
-          <p className="text-[9px] text-white/60 mt-1.5">
-            {[cv.email, cv.phone, cv.location, cv.website].filter(Boolean).join("  ·  ")}
-          </p>
+          <ContactLine cv={cv} layout="inline" className="text-[9px] text-white/60 mt-1.5" />
         </div>
       </div>
 

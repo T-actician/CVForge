@@ -1,5 +1,5 @@
 import { CVData } from "@/lib/cvTypes";
-import { CVSection, LIGHT_STYLE, splitSections, Avatar } from "./shared";
+import { CVSection, LIGHT_STYLE, splitSections, Avatar, ContactLine } from "./shared";
 
 export default function ModernClassic({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages"]);
@@ -13,9 +13,7 @@ export default function ModernClassic({ cv }: { cv: CVData }) {
             {cv.fullName || "Your Name"}
           </p>
           <p className="text-[12px] text-[var(--tpl-accent-dark)]">{cv.jobTitle}</p>
-          <p className="text-[9.5px] text-[#6f5a41] mt-1">
-            {[cv.email, cv.phone, cv.location, cv.website].filter(Boolean).join("  ·  ")}
-          </p>
+          <ContactLine cv={cv} layout="inline" className="text-[9.5px] text-[#6f5a41] mt-1" />
         </div>
       </div>
 

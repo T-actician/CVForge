@@ -5,19 +5,27 @@ import { useCVStore } from "@/store/cvStore";
 import { Field } from "./FormControls";
 import { UploadCloud, Loader2, X } from "lucide-react";
 import { sanitizePhoneInput, phoneError, emailError } from "@/lib/validators";
+import PhotoCropModal from "./PhotoCropModal";
 
 export default function PersonalInfoEditor() {
   const { cv, updateField } = useCVStore();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
-  const handlePhotoChange = async (file: File | null) => {
+  const handleFileSelected = (file: File | null) => {
     if (!file) return;
     setError("");
+    setCropSrc(URL.createObjectURL(file));
+  };
+
+  const handleCropConfirm = async (blob: Blob) => {
+    setCropSrc(null);
     setUploading(true);
+    setError("");
     try {
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", blob, "photo.jpg");
       const res = await fetch("/api/upload-photo", { method: "POST", body: formData });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed.");
@@ -50,6 +58,7 @@ export default function PersonalInfoEditor() {
         />
         <Field label="Location" value={cv.location} onChange={(v) => updateField("location", v)} placeholder="Nairobi, Kenya" />
         <Field label="Website / LinkedIn" value={cv.website} onChange={(v) => updateField("website", v)} placeholder="linkedin.com/in/janedoe" />
+        <Field label="Portfolio (optional)" value={cv.portfolio} onChange={(v) => updateField("portfolio", v)} placeholder="janedoe.dev" />
       </div>
 
       <div>
@@ -80,13 +89,21 @@ export default function PersonalInfoEditor() {
               type="file"
               accept="image/png,image/jpeg,image/webp"
               className="hidden"
-              onChange={(e) => handlePhotoChange(e.target.files?.[0] ?? null)}
+              onChange={(e) => handleFileSelected(e.target.files?.[0] ?? null)}
               disabled={uploading}
             />
           </label>
         </div>
         {error && <p className="text-[11.5px] text-[#a5473a] mt-1.5">{error}</p>}
       </div>
+
+      {cropSrc && (
+        <PhotoCropModal
+          imageSrc={cropSrc}
+          onCancel={() => setCropSrc(null)}
+          onConfirm={handleCropConfirm}
+        />
+      )}
     </div>
   );
 }

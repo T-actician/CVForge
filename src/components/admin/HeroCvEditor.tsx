@@ -128,6 +128,10 @@ export default function HeroCvEditor({
           <span className={labelClass}>Website / LinkedIn</span>
           <input className={inputClass} value={cv.website} onChange={(e) => set("website", e.target.value)} />
         </label>
+        <label>
+          <span className={labelClass}>Portfolio (optional)</span>
+          <input className={inputClass} value={cv.portfolio} onChange={(e) => set("portfolio", e.target.value)} />
+        </label>
       </div>
 
       <label className="block mt-3">

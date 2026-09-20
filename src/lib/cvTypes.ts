@@ -69,6 +69,7 @@ export interface CVData {
   phone: string;
   location: string;
   website: string;
+  portfolio: string;
   photo: string;
   summary: string;
   experience: ExperienceItem[];
@@ -112,6 +113,7 @@ export function emptyCV(): CVData {
     phone: "",
     location: "",
     website: "",
+    portfolio: "",
     photo: "",
     summary: "",
     experience: [],
@@ -143,6 +145,7 @@ export function sampleCV(): CVData {
     phone: "+254 712 345 678",
     location: "Nairobi, Kenya",
     website: "linkedin.com/in/danielmwangi",
+    portfolio: "danielmwangi.dev",
     photo: "",
     summary:
       "Motivated and detail-oriented Software Engineer with 3+ years of experience building scalable web applications. Passionate about clean code, continuous learning, and shipping products that solve real problems.",

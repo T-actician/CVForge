@@ -1,5 +1,5 @@
 import { CVData } from "@/lib/cvTypes";
-import { CVSection, DARK_STYLE, LIGHT_STYLE, splitSections, Avatar } from "./shared";
+import { CVSection, DARK_STYLE, LIGHT_STYLE, splitSections, Avatar, ContactLine } from "./shared";
 
 export default function ElegantSidebar({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages", "certifications"]);
@@ -16,11 +16,8 @@ export default function ElegantSidebar({ cv }: { cv: CVData }) {
         </p>
         <p className="text-[11px] text-[var(--tpl-accent-light)] mt-1">{cv.jobTitle}</p>
 
-        <div className="mt-5 space-y-1 text-[9.5px] text-white/70">
-          {cv.email && <p>{cv.email}</p>}
-          {cv.phone && <p>{cv.phone}</p>}
-          {cv.location && <p>{cv.location}</p>}
-          {cv.website && <p>{cv.website}</p>}
+        <div className="mt-5 text-[9.5px] text-white/70">
+          <ContactLine cv={cv} layout="stacked" className="space-y-1" />
         </div>
 
         <div className="mt-6">
