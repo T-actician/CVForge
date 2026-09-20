@@ -53,6 +53,25 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       const pdf = new jsPDF({ unit: "mm", format: [mmWidth, mmHeight] });
       pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, mmWidth, mmHeight, undefined, "FAST");
 
+      // Overlay real clickable link annotations on top of the flattened
+      // image, at the exact position of each project link pill, so
+      // employers can actually open the link from the PDF (a raster image
+      // can't have selectable text, but it can have a clickable hotspot).
+      const containerRect = exportRef.current.getBoundingClientRect();
+      const mmPerPx = mmWidth / PAGE_WIDTH_PX;
+      exportRef.current.querySelectorAll<HTMLElement>("[data-pdf-link]").forEach((el) => {
+        const url = el.getAttribute("data-pdf-link");
+        if (!url) return;
+        const r = el.getBoundingClientRect();
+        pdf.link(
+          (r.left - containerRect.left) * mmPerPx,
+          (r.top - containerRect.top) * mmPerPx,
+          r.width * mmPerPx,
+          r.height * mmPerPx,
+          { url }
+        );
+      });
+
       const fileBaseName = (cv.fullName || "cv").replace(/\s+/g, "_");
       pdf.save(`${fileBaseName}-Vitae.pdf`);
 

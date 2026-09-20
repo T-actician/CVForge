@@ -111,6 +111,14 @@ export function MultilineText({
   );
 }
 
+// Ensures a project link always has a protocol, so it opens correctly both
+// as a clickable link in the live preview and as a PDF link annotation.
+export function normalizeUrl(url: string): string {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 interface TitleStyle {
   titleClass: string;
   textClass: string;
@@ -252,11 +260,15 @@ export function CVSection({
               <div className="flex items-center gap-2 flex-wrap">
                 <p className={`text-[11px] font-semibold ${s.textClass}`}>{p.name}</p>
                 {p.link && (
-                  <span
-                    className={`text-[8.5px] px-2 py-0.5 rounded-full border ${s.dividerClass} ${s.subTextClass}`}
+                  <a
+                    href={normalizeUrl(p.link)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-pdf-link={normalizeUrl(p.link)}
+                    className={`text-[8.5px] px-2 py-0.5 rounded-full border hover:underline ${s.dividerClass} ${s.subTextClass}`}
                   >
                     {p.link}
-                  </span>
+                  </a>
                 )}
               </div>
               {p.description && (

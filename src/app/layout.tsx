@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vitae — Create a Professional CV in Minutes",
+  title: "Vitae",
   description:
     "Choose from elegant, ATS-friendly templates, customize with your details, and download a professional CV that helps you stand out.",
 };

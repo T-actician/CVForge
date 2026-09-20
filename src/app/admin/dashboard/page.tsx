@@ -89,12 +89,15 @@ export default function AdminDashboard() {
           <span className="font-display text-xl text-[var(--brown-900)]">Vitae Admin</span>
         </div>
         <div className="flex items-center gap-4">
-          <Link href="/" className="text-[13.5px] text-[var(--brown-500)] hover:text-[var(--brown-900)]">
+          <Link
+            href="/"
+            className="text-[13.5px] text-[var(--brown-500)] hover:text-[var(--brown-900)] transition-colors duration-150"
+          >
             View site
           </Link>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-1.5 text-[13.5px] text-[var(--brown-500)] hover:text-[#a5473a]"
+            className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13.5px] text-[var(--brown-500)] transition-all duration-150 hover:bg-[#a5473a]/10 hover:text-[#a5473a] active:scale-95"
           >
             <LogOut size={15} /> Log out
           </button>
