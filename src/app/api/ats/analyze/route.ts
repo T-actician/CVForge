@@ -22,7 +22,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ mode: "profession-keywords", ...result });
   } catch (err) {
     console.error("POST /api/ats/analyze failed:", err);
-    const message = err instanceof Error ? err.message : "Analysis failed.";
+    // Whatever went wrong internally (a raw JSON parse failure, an
+    // unexpected shape from Gemini, etc.) — the person using the app never
+    // sees technical detail, only a plain, friendly message.
+    const message =
+      err instanceof Error && !err.message.includes("{") ? err.message : "Something went wrong analyzing your CV. Please try again.";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

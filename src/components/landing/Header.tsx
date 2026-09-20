@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText } from "lucide-react";
+import { FileText, Menu, X } from "lucide-react";
 
 const NAV = [
   { label: "Home", href: "/" },
@@ -14,6 +15,13 @@ const NAV = [
 
 export default function Header() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const isLinkActive = (href: string) => {
+    const isHashLink = href.includes("#");
+    if (isHashLink) return false;
+    return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  };
 
   return (
     <header className="relative z-20 grid grid-cols-[1fr_auto_1fr] items-center px-6 sm:px-10 py-5 border-b border-[var(--line)]/70">
@@ -27,34 +35,48 @@ export default function Header() {
       </Link>
 
       <nav className="hidden md:flex items-center gap-1.5 text-[15px] justify-self-center">
-        {NAV.map((item) => {
-          // Section anchors (#features etc.) only ever live on "/", so only
-          // an exact path match counts as active for them; "/" itself is
-          // active only when there's no hash in the URL.
-          const isHashLink = item.href.includes("#");
-          const isActive = isHashLink
-            ? false
-            : item.href === "/"
-            ? pathname === "/"
-            : pathname.startsWith(item.href);
+        {NAV.map((item) => (
+          <Link
+            key={item.href}
+            href={item.href}
+            className={`relative px-3.5 py-1.5 rounded-full transition-all duration-200 ${
+              isLinkActive(item.href)
+                ? "text-[var(--brown-900)] bg-gradient-to-r from-[var(--gold-dark)]/15 to-[var(--gold)]/15 shadow-[inset_0_0_0_1px_var(--gold)]"
+                : "text-[var(--brown-700)] hover:text-[var(--brown-900)] hover:bg-[var(--brown-900)]/[0.04]"
+            }`}
+          >
+            {item.label}
+          </Link>
+        ))}
+      </nav>
 
-          return (
+      <button
+        type="button"
+        onClick={() => setMenuOpen((o) => !o)}
+        aria-label="Toggle menu"
+        className="md:hidden justify-self-end flex h-9 w-9 items-center justify-center rounded-md text-[var(--brown-900)] hover:bg-[var(--brown-900)]/[0.06] transition-colors"
+      >
+        {menuOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
+      {menuOpen && (
+        <nav className="md:hidden absolute top-full left-0 right-0 flex flex-col border-b border-[var(--line)]/70 bg-[var(--cream)] px-6 py-3 shadow-lg">
+          {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`relative px-3.5 py-1.5 rounded-full transition-all duration-200 ${
-                isActive
-                  ? "text-[var(--brown-900)] bg-gradient-to-r from-[var(--gold-dark)]/15 to-[var(--gold)]/15 shadow-[inset_0_0_0_1px_var(--gold)]"
-                  : "text-[var(--brown-700)] hover:text-[var(--brown-900)] hover:bg-[var(--brown-900)]/[0.04]"
+              onClick={() => setMenuOpen(false)}
+              className={`px-2 py-2.5 text-[15px] rounded-md transition-colors ${
+                isLinkActive(item.href)
+                  ? "text-[var(--brown-900)] bg-[var(--gold)]/10 font-medium"
+                  : "text-[var(--brown-700)] hover:bg-[var(--brown-900)]/[0.04]"
               }`}
             >
               {item.label}
             </Link>
-          );
-        })}
-      </nav>
-
-      <div />
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

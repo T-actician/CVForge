@@ -42,31 +42,51 @@ function cvToText(cv: CVData): string {
   return parts.join("\n");
 }
 
+function friendlyErrorMessage(status: number): string {
+  if (status === 503 || status === 429) {
+    return "The analysis service is temporarily busy. Please try again in a moment.";
+  }
+  if (status === 401 || status === 403) {
+    return "The analysis service isn't configured correctly. Please contact support.";
+  }
+  return "Something went wrong analyzing your CV. Please try again.";
+}
+
 async function callGemini(system: string, user: string): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error("GEMINI_API_KEY is not configured.");
+  if (!apiKey) throw new Error("The analysis service isn't configured correctly. Please contact support.");
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system }] },
-        contents: [{ parts: [{ text: user }] }],
-        generationConfig: { responseMimeType: "application/json" },
-      }),
-    }
-  );
+  const attempt = async (): Promise<Response> =>
+    fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: system }] },
+          contents: [{ parts: [{ text: user }] }],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
+      }
+    );
+
+  // Gemini's 503 ("model overloaded") is usually a brief spike, not a real
+  // failure — retry a couple of times with a short backoff before giving up,
+  // so a transient blip doesn't surface as an error to the person at all.
+  let res = await attempt();
+  for (let i = 0; i < 2 && (res.status === 503 || res.status === 429) && !res.ok; i++) {
+    await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+    res = await attempt();
+  }
 
   if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`Gemini API error (${res.status}): ${text.slice(0, 300)}`);
+    console.error(`Gemini API error (${res.status}):`, await res.text().catch(() => ""));
+    throw new Error(friendlyErrorMessage(res.status));
   }
 
   const data = await res.json();
   const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
-  if (!text) throw new Error("Gemini returned an empty response.");
+  if (!text) throw new Error(friendlyErrorMessage(500));
   return text;
 }
 

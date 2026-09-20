@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useCVStore } from "@/store/cvStore";
 import { runAtsChecks, completenessScore } from "@/lib/ats";
-import { CheckCircle2, Circle, Plus, Loader2 } from "lucide-react";
+import { CheckCircle2, Circle, Plus, Loader2, AlertTriangle } from "lucide-react";
 
 interface JobMatchResult {
   mode: "job-match";
@@ -131,7 +131,12 @@ export default function AtsPanel() {
             : "Suggest keywords for my profession"}
         </button>
 
-        {error && <p className="mt-2 text-[12px] text-[#a5473a]">{error}</p>}
+        {error && (
+          <div className="mt-2 flex items-start gap-2 rounded-md border border-[#a5473a]/30 bg-[#a5473a]/5 px-3 py-2.5">
+            <AlertTriangle size={14} className="text-[#a5473a] shrink-0 mt-0.5" />
+            <p className="text-[12px] text-[#a5473a]">{error}</p>
+          </div>
+        )}
 
         {result && (
           <div className="mt-4 space-y-3">

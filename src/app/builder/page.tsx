@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FileText, ArrowLeft, Sparkles } from "lucide-react";
@@ -21,6 +21,22 @@ function BuilderInner() {
   const [tab, setTab] = useState<"content" | "design" | "ats">("content");
   const [templateSettings, setTemplateSettings] = useState<AllTemplateSettings>({});
   const [hydrated, setHydrated] = useState(false);
+  const previewWrapRef = useRef<HTMLDivElement>(null);
+  const [previewScale, setPreviewScale] = useState(0.62);
+
+  useEffect(() => {
+    const el = previewWrapRef.current;
+    if (!el) return;
+    // Same 0.62 desktop scale as before, but never wider than the actual
+    // space available — on a narrow phone the fixed 0.62 made the 794px
+    // design width overflow, forcing the browser to shrink it further and
+    // leaving the CV looking squeezed into a thin column.
+    const update = () => setPreviewScale(Math.min(0.62, el.offsetWidth / 794));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     useCVStore.persist.rehydrate();
@@ -104,16 +120,18 @@ function BuilderInner() {
           </div>
         </div>
 
-        <div className="flex items-start justify-center p-8 overflow-auto bg-[var(--ivory)]/40">
-          <div
-            className="shadow-xl origin-top"
-            style={{
-              width: 794,
-              transform: "scale(0.62)",
-              marginBottom: -1123 * 0.38,
-            }}
-          >
-            <CVRenderer templateId={templateId} cv={cv} settings={templateSettings[templateId]} />
+        <div className="flex items-start justify-center p-4 sm:p-8 overflow-auto bg-[var(--ivory)]/40">
+          <div ref={previewWrapRef} className="w-full max-w-[794px]">
+            <div
+              className="shadow-xl origin-top mx-auto"
+              style={{
+                width: 794,
+                transform: `scale(${previewScale})`,
+                marginBottom: -1123 * (1 - previewScale),
+              }}
+            >
+              <CVRenderer templateId={templateId} cv={cv} settings={templateSettings[templateId]} />
+            </div>
           </div>
         </div>
       </div>
