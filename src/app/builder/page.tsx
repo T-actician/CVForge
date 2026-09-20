@@ -121,16 +121,23 @@ function BuilderInner() {
         </div>
 
         <div className="flex items-start justify-center p-4 sm:p-8 overflow-auto bg-[var(--ivory)]/40">
-          <div ref={previewWrapRef} className="w-full max-w-[794px]">
+          <div ref={previewWrapRef} className="w-full max-w-[794px] flex justify-center">
             <div
-              className="shadow-xl origin-top mx-auto"
+              className="shadow-xl"
               style={{
-                width: 794,
-                transform: `scale(${previewScale})`,
+                width: 794 * previewScale,
                 marginBottom: -1123 * (1 - previewScale),
               }}
             >
-              <CVRenderer templateId={templateId} cv={cv} settings={templateSettings[templateId]} />
+              <div
+                style={{
+                  width: 794,
+                  transform: `scale(${previewScale})`,
+                  transformOrigin: "top left",
+                }}
+              >
+                <CVRenderer templateId={templateId} cv={cv} settings={templateSettings[templateId]} />
+              </div>
             </div>
           </div>
         </div>
