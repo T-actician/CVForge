@@ -5,7 +5,7 @@ export default function Elegant({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages"]);
 
   return (
-    <div className="bg-[#fffdf8] text-[#241a10] p-10 font-sans w-full h-full overflow-hidden">
+    <div className="bg-[#fffdf8] text-[#241a10] p-10 font-sans w-full min-h-full">
       <div className="flex items-end justify-between pb-4 border-b-2 border-[var(--tpl-accent)]">
         <div>
           <p

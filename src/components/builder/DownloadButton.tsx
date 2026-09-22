@@ -141,9 +141,14 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       )}
       {error && <p className="text-[12.5px] text-[#a5473a]">{error}</p>}
 
-      {/* Hidden full-resolution render used for crisp PDF export */}
-      <div className="fixed top-0 left-[-99999px]" aria-hidden>
-        <div ref={exportRef} style={{ width: 794, overflow: "hidden" }}>
+      {/* Hidden full-resolution render used for crisp PDF export. Kept in
+          normal document flow at (0,0) — not an extreme negative offset —
+          because html2canvas miscalculates its capture region for elements
+          positioned far outside the viewport, which was clipping the right
+          portion of the page in the downloaded PDF. The 0x0 overflow-hidden
+          outer div gives it zero footprint on the visible page. */}
+      <div className="absolute top-0 left-0 h-0 w-0 overflow-hidden" style={{ opacity: 0, pointerEvents: "none" }} aria-hidden>
+        <div ref={exportRef} style={{ width: 794 }}>
           <CVRenderer templateId={templateId} cv={cv} settings={settings} />
         </div>
       </div>

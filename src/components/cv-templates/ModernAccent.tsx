@@ -11,7 +11,7 @@ export default function ModernAccent({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages", "certifications"]);
 
   return (
-    <div className="bg-white text-[#241a10] font-sans w-full h-full flex overflow-hidden">
+    <div className="bg-white text-[#241a10] font-sans w-full min-h-full flex">
       <div className="flex-1 p-8 min-w-0">
         <p
           className="text-[22px] leading-tight"

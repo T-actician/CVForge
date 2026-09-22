@@ -5,7 +5,7 @@ export default function ElegantSidebar({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages", "certifications"]);
 
   return (
-    <div className="bg-white text-[#241a10] font-sans w-full h-full flex overflow-hidden">
+    <div className="bg-white text-[#241a10] font-sans w-full min-h-full flex">
       <div className="w-[34%] min-w-0 bg-[#241a10] text-white p-6">
         <Avatar photo={cv.photo} size={68} />
         <p
