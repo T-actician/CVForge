@@ -27,12 +27,12 @@ export default function CreativeProfessional({ cv }: { cv: CVData }) {
       </div>
 
       <div className="grid grid-cols-[1fr_180px] gap-8 px-9 py-6">
-        <div>
+        <div className="min-w-0">
           {main.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
           ))}
         </div>
-        <div>
+        <div className="min-w-0">
           {aside.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={ASIDE_STYLE} />
           ))}

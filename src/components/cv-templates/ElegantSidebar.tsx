@@ -6,7 +6,7 @@ export default function ElegantSidebar({ cv }: { cv: CVData }) {
 
   return (
     <div className="bg-white text-[#241a10] font-sans w-full h-full flex">
-      <div className="w-[34%] bg-[#241a10] text-white p-6">
+      <div className="w-[34%] min-w-0 bg-[#241a10] text-white p-6">
         <Avatar photo={cv.photo} size={68} />
         <p
           className="mt-4 text-[18px] leading-tight"
@@ -27,7 +27,7 @@ export default function ElegantSidebar({ cv }: { cv: CVData }) {
         </div>
       </div>
 
-      <div className="flex-1 p-7">
+      <div className="flex-1 p-7 min-w-0">
         {main.map((type) => (
           <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
         ))}

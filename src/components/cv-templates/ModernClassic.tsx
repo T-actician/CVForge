@@ -18,12 +18,12 @@ export default function ModernClassic({ cv }: { cv: CVData }) {
       </div>
 
       <div className="grid grid-cols-[1fr_190px] gap-8 mt-5">
-        <div>
+        <div className="min-w-0">
           {main.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
           ))}
         </div>
-        <div>
+        <div className="min-w-0">
           {aside.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
           ))}
