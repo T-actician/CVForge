@@ -21,13 +21,13 @@ export default function Elegant({ cv }: { cv: CVData }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-[1fr_180px] gap-8 mt-5">
-        <div className="min-w-0">
+      <div className="flex gap-8 mt-5">
+        <div className="flex-1 min-w-0">
           {main.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
           ))}
         </div>
-        <div className="min-w-0">
+        <div className="w-[180px] min-w-0 shrink-0">
           {aside.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
           ))}

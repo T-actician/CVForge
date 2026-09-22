@@ -41,17 +41,26 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       // of the rounding-introduced blur from an intermediate copy step.
       const SCALE = 4;
       const PAGE_WIDTH_PX = 794; // design width used everywhere (A4 @ 96dpi)
+      // Must measure and pass an explicit height too — passing only
+      // width/windowWidth without a matching height/windowHeight made
+      // html2canvas fall back to the browser's own viewport height for its
+      // internal render window, silently truncating the capture to
+      // whatever the visible window happened to be (this is what produced
+      // the "794x689" truncated capture instead of the CV's real height).
+      const contentHeightPxUnscaled = exportRef.current.scrollHeight;
 
-      // width/windowWidth force the capture to exactly this pixel width no
-      // matter what the DOM would otherwise report (scrollWidth etc.) — a
-      // hard guarantee against any layout bug making the capture wider than
-      // intended, which is what was distorting/splitting the page earlier.
+      // width/windowWidth/height/windowHeight force the capture to exactly
+      // this pixel size no matter what the DOM would otherwise report — a
+      // hard guarantee against any layout bug making the capture a
+      // different size than intended.
       const canvas = await html2canvas(exportRef.current, {
         scale: SCALE,
         useCORS: true,
         backgroundColor: "#ffffff",
         width: PAGE_WIDTH_PX,
         windowWidth: PAGE_WIDTH_PX,
+        height: contentHeightPxUnscaled,
+        windowHeight: contentHeightPxUnscaled,
       });
 
       const contentHeightPx = canvas.height / SCALE;
