@@ -52,6 +52,18 @@ function BuilderInner() {
     };
   }, []);
 
+  // Re-measure whenever the active tab changes. Switching to Design (or ATS)
+  // swaps the left panel's content, which can briefly change the page's
+  // layout/scroll state before it settles — recompute so the preview keeps
+  // the same centered, uncropped scale it has on the Content tab.
+  useEffect(() => {
+    const el = previewWrapRef.current;
+    if (!el) return;
+    const viewportBound = window.innerWidth - 32;
+    const available = Math.min(el.offsetWidth, viewportBound);
+    setPreviewScale(Math.min(0.62, available / 794));
+  }, [tab]);
+
   useEffect(() => {
     useCVStore.persist.rehydrate();
     setHydrated(true);
@@ -105,7 +117,7 @@ function BuilderInner() {
         </div>
       </header>
 
-      <div className="flex-1 grid lg:grid-cols-[440px_1fr]">
+      <div className="flex-1 grid md:grid-cols-[440px_1fr]">
         <div className="border-r border-[var(--line)] bg-[var(--paper)] flex flex-col">
           <div className="flex border-b border-[var(--line)]">
             {(["content", "design", "ats"] as const).map((t) => (

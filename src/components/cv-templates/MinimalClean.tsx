@@ -20,7 +20,7 @@ export default function MinimalClean({ cv }: { cv: CVData }) {
           {cv.fullName || "Your Name"}
         </p>
         <p className="text-[12px] text-[var(--tpl-accent-dark)] mt-1">{cv.jobTitle}</p>
-        <ContactLine cv={cv} layout="inline" className="text-[9.5px] text-[#6f5a41] mt-2" />
+        <ContactLine cv={cv} layout="inline" className="text-[9.5px] text-[#6f5a41] mt-2" centered />
       </div>
 
       <div className="mt-5 max-w-[560px] mx-auto">

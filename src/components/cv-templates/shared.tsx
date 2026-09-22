@@ -130,11 +130,13 @@ export function ContactLine({
   layout,
   className,
   style = LIGHT_STYLE,
+  centered = false,
 }: {
   cv: CVData;
   layout: "inline" | "stacked";
   className: string;
   style?: TitleStyle;
+  centered?: boolean;
 }) {
   const items: { text: string; href?: string }[] = [
     { text: cv.email },
@@ -178,7 +180,7 @@ export function ContactLine({
   }
 
   return (
-    <p className={`${className} flex flex-wrap items-center gap-x-1 gap-y-1`}>
+    <p className={`${className} flex flex-wrap items-center gap-x-1 gap-y-1${centered ? " justify-center" : ""}`}>
       {items.map((item, i) => (
         <span key={i} className="inline-flex items-center gap-1">
           {i > 0 && !item.href && !items[i - 1].href && "·"}
