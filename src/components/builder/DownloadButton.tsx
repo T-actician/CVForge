@@ -67,6 +67,18 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       const mmWidth = 210; // A4 width
       const mmHeight = (contentHeightPx / PAGE_WIDTH_PX) * mmWidth;
 
+      // A page sized exactly to the content (0 margin) rendered content
+      // flush against the PDF page edges — fine on desktop, but on mobile
+      // PDF viewers (which commonly render the page edge-to-edge at
+      // "fit width") that meant the CV touched the phone's screen edges
+      // with no breathing room. Padding the page itself by a small margin
+      // on every side — independent of the template's own internal
+      // padding — guarantees a consistent gap no matter which template or
+      // viewer renders it.
+      const MARGIN_MM = 5;
+      const pageWidth = mmWidth + MARGIN_MM * 2;
+      const pageHeight = mmHeight + MARGIN_MM * 2;
+
       // jsPDF defaults to orientation "portrait" and, for a custom [w, h]
       // format, SILENTLY SWAPS width/height whenever width > height to
       // enforce that. A short CV (mmHeight < 210mm, i.e. shorter than A4 is
@@ -75,9 +87,9 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       // wider than the swapped page, clipping the right ~35% of every
       // export. Passing orientation explicitly, matched to the real
       // width/height relationship, stops jsPDF from ever swapping them.
-      const orientation = mmHeight >= mmWidth ? "portrait" : "landscape";
-      const pdf = new jsPDF({ unit: "mm", format: [mmWidth, mmHeight], orientation });
-      pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, mmWidth, mmHeight, undefined, "FAST");
+      const orientation = pageHeight >= pageWidth ? "portrait" : "landscape";
+      const pdf = new jsPDF({ unit: "mm", format: [pageWidth, pageHeight], orientation });
+      pdf.addImage(canvas.toDataURL("image/png"), "PNG", MARGIN_MM, MARGIN_MM, mmWidth, mmHeight, undefined, "FAST");
 
       // Overlay real clickable link annotations on top of the flattened
       // image, at the exact position of each project link pill, so
@@ -90,8 +102,8 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
         if (!url) return;
         const r = el.getBoundingClientRect();
         pdf.link(
-          (r.left - containerRect.left) * mmPerPx,
-          (r.top - containerRect.top) * mmPerPx,
+          MARGIN_MM + (r.left - containerRect.left) * mmPerPx,
+          MARGIN_MM + (r.top - containerRect.top) * mmPerPx,
           r.width * mmPerPx,
           r.height * mmPerPx,
           { url }

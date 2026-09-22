@@ -18,9 +18,23 @@ export default function PhotoCropModal({
   const imgRef = useRef<HTMLImageElement>(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  // The image's natural pixels are almost always far bigger than the 280px
+  // viewport, so rendering it at 1:1 (no base fit) showed only a tiny,
+  // already-zoomed-in crop of the photo before the user touched anything.
+  // baseScale fits the image's shorter side to the viewport once — that's
+  // the "whole picture" starting point — and the zoom slider (still 1–3)
+  // now zooms in further from THAT fitted view, which is what the user
+  // controls, instead of being the raw/native scale.
+  const [baseScale, setBaseScale] = useState(1);
   const dragRef = useRef<{ x: number; y: number; startOffset: { x: number; y: number } } | null>(
     null
   );
+
+  const handleImageLoad = () => {
+    const img = imgRef.current;
+    if (!img) return;
+    setBaseScale(VIEWPORT / Math.min(img.naturalWidth, img.naturalHeight));
+  };
 
   const handlePointerDown = (e: React.PointerEvent) => {
     dragRef.current = { x: e.clientX, y: e.clientY, startOffset: offset };
@@ -88,9 +102,10 @@ export default function PhotoCropModal({
             src={imageSrc}
             alt=""
             draggable={false}
+            onLoad={handleImageLoad}
             className="absolute top-1/2 left-1/2 max-w-none pointer-events-none"
             style={{
-              transform: `translate(-50%, -50%) translate(${offset.x}px, ${offset.y}px) scale(${zoom})`,
+              transform: `translate(-50%, -50%) translate(${offset.x}px, ${offset.y}px) scale(${baseScale * zoom})`,
             }}
           />
           {/* Circular guide showing exactly what will appear on the CV */}
