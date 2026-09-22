@@ -39,7 +39,7 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       // well-tested, reliable path). Embedding html2canvas's own canvas
       // directly (no extra canvas-to-canvas copy) also removes any chance
       // of the rounding-introduced blur from an intermediate copy step.
-      const SCALE = 4;
+      const SCALE = 5;
       const PAGE_WIDTH_PX = 794; // design width used everywhere (A4 @ 96dpi)
       // Must measure and pass an explicit height too — passing only
       // width/windowWidth without a matching height/windowHeight made
