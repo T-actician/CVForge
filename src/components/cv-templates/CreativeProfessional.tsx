@@ -11,7 +11,7 @@ export default function CreativeProfessional({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages", "certifications"]);
 
   return (
-    <div className="bg-white text-[#241a10] font-sans w-full h-full overflow-hidden">
+    <div className="bg-white text-[#241a10] font-sans w-full h-full">
       <div className="bg-[#241a10] text-white px-9 py-6 flex items-center gap-4">
         <Avatar photo={cv.photo} size={56} />
         <div>
@@ -26,13 +26,13 @@ export default function CreativeProfessional({ cv }: { cv: CVData }) {
         </div>
       </div>
 
-      <div className="flex gap-8 px-9 py-6">
-        <div className="flex-1 min-w-0">
+      <div className="grid grid-cols-[1fr_180px] gap-8 px-9 py-6">
+        <div>
           {main.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
           ))}
         </div>
-        <div className="w-[180px] min-w-0 shrink-0">
+        <div>
           {aside.map((type) => (
             <CVSection key={type} type={type} cv={cv} style={ASIDE_STYLE} />
           ))}

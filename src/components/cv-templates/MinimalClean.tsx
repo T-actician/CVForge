@@ -11,7 +11,7 @@ export default function MinimalClean({ cv }: { cv: CVData }) {
   const { main } = splitSections(cv, []);
 
   return (
-    <div className="bg-white text-[#241a10] p-10 font-sans w-full h-full overflow-hidden">
+    <div className="bg-white text-[#241a10] p-10 font-sans w-full h-full">
       <div className="text-center pb-4 border-b border-[#e6dcc6]">
         <p
           className="text-[24px]"
