@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { Check, X, ZoomIn } from "lucide-react";
 
 const VIEWPORT = 280;
-const OUTPUT = 600;
+const OUTPUT = 900;
 
 export default function PhotoCropModal({
   imageSrc,
@@ -66,6 +66,14 @@ export default function PhotoCropModal({
     canvas.width = OUTPUT;
     canvas.height = OUTPUT;
     const ctx = canvas.getContext("2d")!;
+    // A phone photo is typically far larger than OUTPUT, so this draw is a
+    // big single-step downsample. Canvas 2D defaults to a low-quality
+    // resample for that ("imageSmoothingQuality" isn't "high" unless set
+    // explicitly), which is what actually baked the blur into the stored
+    // avatar — not the PDF export step. This is the real fix; every export
+    // downstream just reuses whatever sharpness is saved here.
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, OUTPUT, OUTPUT);
     ctx.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, destX, destY, destWidth, destHeight);

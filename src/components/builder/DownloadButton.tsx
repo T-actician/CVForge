@@ -20,6 +20,17 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
     setLoading(true);
     setCloudUrl("");
     setError("");
+
+    // Let the browser actually paint the "Preparing…" spinner — and let
+    // its CSS transform animation start ticking on the compositor thread
+    // — before the heavy, mostly-synchronous html2canvas capture blocks
+    // the main thread. Without this yield, the loading state and the
+    // blocking work landed in the same task, so the spinner never got
+    // its first composited frame and looked frozen for the whole export.
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+    );
+
     try {
       // html2canvas-pro (not stock html2canvas) — Tailwind v4's opacity
       // modifiers (e.g. "border-white/15") compile to color-mix(in oklab, ...),
