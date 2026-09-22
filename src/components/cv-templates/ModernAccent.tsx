@@ -11,8 +11,8 @@ export default function ModernAccent({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages", "certifications"]);
 
   return (
-    <div className="bg-white text-[#241a10] font-sans w-full h-full flex">
-      <div className="flex-1 p-8">
+    <div className="bg-white text-[#241a10] font-sans w-full h-full flex overflow-hidden">
+      <div className="flex-1 p-8 min-w-0">
         <p
           className="text-[22px] leading-tight"
           style={{ fontFamily: "var(--font-display)" }}
@@ -25,7 +25,7 @@ export default function ModernAccent({ cv }: { cv: CVData }) {
           <CVSection key={type} type={type} cv={cv} style={LIGHT_STYLE} />
         ))}
       </div>
-      <div className="w-[180px] bg-[#f4ecdb] p-6 border-l border-[#e6dcc6]">
+      <div className="w-[180px] min-w-0 bg-[#f4ecdb] p-6 border-l border-[#e6dcc6]">
         <Avatar photo={cv.photo} size={56} />
         <div className="mt-5">
           {aside.map((type) => (

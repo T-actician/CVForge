@@ -303,7 +303,7 @@ export function CVSection({
           {cv.skills.map((sk) => (
             <span
               key={sk.id}
-              className={`text-[9.5px] px-2 py-1 rounded-full border ${s.dividerClass} ${s.subTextClass}`}
+              className={`max-w-full break-words text-[9.5px] px-2 py-1 rounded-full border ${s.dividerClass} ${s.subTextClass}`}
             >
               {sk.name}
             </span>
@@ -328,7 +328,7 @@ export function CVSection({
                     target="_blank"
                     rel="noopener noreferrer"
                     data-pdf-link={normalizeUrl(p.link)}
-                    className={`text-[8.5px] px-2 py-0.5 rounded-full border hover:underline ${s.dividerClass} ${s.subTextClass}`}
+                    className={`max-w-full break-words text-[8.5px] px-2 py-0.5 rounded-full border hover:underline ${s.dividerClass} ${s.subTextClass}`}
                   >
                     {p.link}
                   </a>
