@@ -129,10 +129,12 @@ export function ContactLine({
   cv,
   layout,
   className,
+  style = LIGHT_STYLE,
 }: {
   cv: CVData;
   layout: "inline" | "stacked";
   className: string;
+  style?: TitleStyle;
 }) {
   const items: { text: string; href?: string }[] = [
     { text: cv.email },
@@ -144,6 +146,9 @@ export function ContactLine({
 
   if (items.length === 0) return null;
 
+  // Website/portfolio links get the same rounded-pill treatment as project
+  // links (see the "projects" case below) so they read as clickable chips
+  // rather than plain underlined text.
   const renderItem = (item: (typeof items)[number], i: number) =>
     item.href ? (
       <a
@@ -152,7 +157,7 @@ export function ContactLine({
         target="_blank"
         rel="noopener noreferrer"
         data-pdf-link={item.href}
-        className="hover:underline"
+        className={`inline-block max-w-full break-words px-2 py-0.5 rounded-full border hover:underline ${style.dividerClass} ${style.subTextClass}`}
       >
         {item.text}
       </a>
@@ -164,17 +169,19 @@ export function ContactLine({
     return (
       <div className={className}>
         {items.map((item, i) => (
-          <p key={i}>{renderItem(item, i)}</p>
+          <p key={i} className={item.href ? "mt-1" : undefined}>
+            {renderItem(item, i)}
+          </p>
         ))}
       </div>
     );
   }
 
   return (
-    <p className={className}>
+    <p className={`${className} flex flex-wrap items-center gap-x-1 gap-y-1`}>
       {items.map((item, i) => (
-        <span key={i}>
-          {i > 0 && "  ·  "}
+        <span key={i} className="inline-flex items-center gap-1">
+          {i > 0 && !item.href && !items[i - 1].href && "·"}
           {renderItem(item, i)}
         </span>
       ))}

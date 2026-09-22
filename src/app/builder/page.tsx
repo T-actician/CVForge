@@ -30,12 +30,26 @@ function BuilderInner() {
     // Same 0.62 desktop scale as before, but never wider than the actual
     // space available — on a narrow phone the fixed 0.62 made the 794px
     // design width overflow, forcing the browser to shrink it further and
-    // leaving the CV looking squeezed into a thin column.
-    const update = () => setPreviewScale(Math.min(0.62, el.offsetWidth / 794));
+    // leaving the CV looking squeezed into a thin column. Also bounded by
+    // window.innerWidth directly (minus horizontal padding): relying only
+    // on el.offsetWidth was occasionally stale on mobile right after
+    // rotation/resize, letting the preview render wider than the visible
+    // screen and get cut off at the edge.
+    const update = () => {
+      const viewportBound = window.innerWidth - 32; // p-4 (16px) each side
+      const available = Math.min(el.offsetWidth, viewportBound);
+      setPreviewScale(Math.min(0.62, available / 794));
+    };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
-    return () => ro.disconnect();
+    window.addEventListener("resize", update);
+    window.addEventListener("orientationchange", update);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+      window.removeEventListener("orientationchange", update);
+    };
   }, []);
 
   useEffect(() => {
@@ -61,7 +75,7 @@ function BuilderInner() {
   const score = completenessScore(cv);
 
   return (
-    <div className="min-h-screen bg-[var(--cream)] flex flex-col">
+    <div className="min-h-screen bg-[var(--cream)] flex flex-col overflow-x-hidden">
       <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--line)] bg-[var(--paper)]">
         <div className="flex items-center gap-5">
           <Link href="/templates" className="flex items-center gap-1.5 text-[13.5px] text-[var(--brown-500)] hover:text-[var(--brown-900)]">
@@ -81,9 +95,11 @@ function BuilderInner() {
           </span>
           <button
             onClick={() => setCV(sampleCV())}
-            className="hidden sm:flex items-center gap-1.5 text-[13px] text-[var(--brown-500)] hover:text-[var(--gold-dark)]"
+            aria-label="Load sample data"
+            className="flex items-center gap-1.5 text-[13px] text-[var(--brown-500)] hover:text-[var(--gold-dark)]"
           >
-            <Sparkles size={14} /> Load sample data
+            <Sparkles size={14} />
+            <span className="hidden sm:inline">Load sample data</span>
           </button>
           <DownloadButton settings={templateSettings[templateId]} />
         </div>
@@ -126,6 +142,7 @@ function BuilderInner() {
               className="shadow-xl overflow-hidden"
               style={{
                 width: 794 * previewScale,
+                maxWidth: "100%",
                 marginBottom: -1123 * (1 - previewScale),
               }}
             >

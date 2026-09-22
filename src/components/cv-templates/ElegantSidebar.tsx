@@ -17,7 +17,7 @@ export default function ElegantSidebar({ cv }: { cv: CVData }) {
         <p className="text-[11px] text-[var(--tpl-accent-light)] mt-1">{cv.jobTitle}</p>
 
         <div className="mt-5 text-[9.5px] text-white/70">
-          <ContactLine cv={cv} layout="stacked" className="space-y-1" />
+          <ContactLine cv={cv} layout="stacked" className="space-y-1" style={DARK_STYLE} />
         </div>
 
         <div className="mt-6">
