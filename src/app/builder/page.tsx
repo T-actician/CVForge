@@ -117,8 +117,8 @@ function BuilderInner() {
         </div>
       </header>
 
-      <div className="flex-1 grid md:grid-cols-[440px_1fr]">
-        <div className="border-r border-[var(--line)] bg-[var(--paper)] flex flex-col">
+      <div className="flex-1 min-w-0 grid md:grid-cols-[440px_1fr]">
+        <div className="min-w-0 border-r border-[var(--line)] bg-[var(--paper)] flex flex-col">
           <div className="flex border-b border-[var(--line)]">
             {(["content", "design", "ats"] as const).map((t) => (
               <button
@@ -134,7 +134,7 @@ function BuilderInner() {
               </button>
             ))}
           </div>
-          <div className="p-5 overflow-y-auto max-h-[calc(100vh-140px)]">
+          <div className="p-5 md:overflow-y-auto md:max-h-[calc(100vh-140px)]">
             {tab === "content" && <SectionManager />}
             {tab === "design" && (
               <div>
@@ -148,7 +148,7 @@ function BuilderInner() {
           </div>
         </div>
 
-        <div className="flex items-start justify-center p-4 sm:p-8 overflow-auto bg-[var(--ivory)]/40">
+        <div className="min-w-0 flex items-start justify-center p-4 sm:p-8 md:overflow-auto bg-[var(--ivory)]/40">
           <div ref={previewWrapRef} className="w-full max-w-[794px] flex justify-center">
             <div
               className="shadow-xl overflow-hidden"
