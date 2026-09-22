@@ -14,7 +14,7 @@ export default function CreativeProfessional({ cv }: { cv: CVData }) {
     <div className="bg-white text-[#241a10] font-sans w-full h-full overflow-hidden">
       <div className="bg-[#241a10] text-white px-9 py-6 flex items-center gap-4">
         <Avatar photo={cv.photo} size={56} />
-        <div>
+        <div className="flex-1 min-w-0">
           <p
             className="text-[20px] leading-tight"
             style={{ fontFamily: "var(--font-display)" }}
