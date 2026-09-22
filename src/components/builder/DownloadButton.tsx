@@ -42,10 +42,16 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       const SCALE = 4;
       const PAGE_WIDTH_PX = 794; // design width used everywhere (A4 @ 96dpi)
 
+      // width/windowWidth force the capture to exactly this pixel width no
+      // matter what the DOM would otherwise report (scrollWidth etc.) — a
+      // hard guarantee against any layout bug making the capture wider than
+      // intended, which is what was distorting/splitting the page earlier.
       const canvas = await html2canvas(exportRef.current, {
         scale: SCALE,
         useCORS: true,
         backgroundColor: "#ffffff",
+        width: PAGE_WIDTH_PX,
+        windowWidth: PAGE_WIDTH_PX,
       });
 
       const contentHeightPx = canvas.height / SCALE;
@@ -128,7 +134,7 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
 
       {/* Hidden full-resolution render used for crisp PDF export */}
       <div className="fixed top-0 left-[-99999px]" aria-hidden>
-        <div ref={exportRef} style={{ width: 794 }}>
+        <div ref={exportRef} style={{ width: 794, overflow: "hidden" }}>
           <CVRenderer templateId={templateId} cv={cv} settings={settings} />
         </div>
       </div>

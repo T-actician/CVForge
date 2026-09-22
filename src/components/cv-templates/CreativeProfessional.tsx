@@ -11,7 +11,7 @@ export default function CreativeProfessional({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages", "certifications"]);
 
   return (
-    <div className="bg-white text-[#241a10] font-sans w-full h-full">
+    <div className="bg-white text-[#241a10] font-sans w-full h-full overflow-hidden">
       <div className="bg-[#241a10] text-white px-9 py-6 flex items-center gap-4">
         <Avatar photo={cv.photo} size={56} />
         <div>

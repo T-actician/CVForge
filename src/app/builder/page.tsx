@@ -123,7 +123,7 @@ function BuilderInner() {
         <div className="flex items-start justify-center p-4 sm:p-8 overflow-auto bg-[var(--ivory)]/40">
           <div ref={previewWrapRef} className="w-full max-w-[794px] flex justify-center">
             <div
-              className="shadow-xl"
+              className="shadow-xl overflow-hidden"
               style={{
                 width: 794 * previewScale,
                 marginBottom: -1123 * (1 - previewScale),

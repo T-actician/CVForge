@@ -5,7 +5,7 @@ export default function ModernClassic({ cv }: { cv: CVData }) {
   const { main, aside } = splitSections(cv, ["skills", "languages"]);
 
   return (
-    <div className="bg-white text-[#241a10] p-10 font-sans w-full h-full">
+    <div className="bg-white text-[#241a10] p-10 font-sans w-full h-full overflow-hidden">
       <div className="flex items-center gap-4 pb-4 border-b-2 border-[#241a10]">
         <Avatar photo={cv.photo} size={60} />
         <div>
