@@ -67,7 +67,16 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       const mmWidth = 210; // A4 width
       const mmHeight = (contentHeightPx / PAGE_WIDTH_PX) * mmWidth;
 
-      const pdf = new jsPDF({ unit: "mm", format: [mmWidth, mmHeight] });
+      // jsPDF defaults to orientation "portrait" and, for a custom [w, h]
+      // format, SILENTLY SWAPS width/height whenever width > height to
+      // enforce that. A short CV (mmHeight < 210mm, i.e. shorter than A4 is
+      // wide) triggered that swap, turning the page into mmHeight x mmWidth
+      // while addImage below still drew the image at mmWidth x mmHeight —
+      // wider than the swapped page, clipping the right ~35% of every
+      // export. Passing orientation explicitly, matched to the real
+      // width/height relationship, stops jsPDF from ever swapping them.
+      const orientation = mmHeight >= mmWidth ? "portrait" : "landscape";
+      const pdf = new jsPDF({ unit: "mm", format: [mmWidth, mmHeight], orientation });
       pdf.addImage(canvas.toDataURL("image/png"), "PNG", 0, 0, mmWidth, mmHeight, undefined, "FAST");
 
       // Overlay real clickable link annotations on top of the flattened
