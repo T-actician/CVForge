@@ -123,17 +123,18 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       <button
         onClick={handleDownload}
         disabled={loading}
-        className="inline-flex items-center gap-1.5 rounded-md bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold)] px-3.5 py-2 text-[13px] text-white hover:brightness-105 transition disabled:opacity-60"
+        className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-gradient-to-r from-[var(--gold-dark)] to-[var(--gold)] px-3 sm:px-3.5 py-2 text-[13px] text-white hover:brightness-105 transition disabled:opacity-60"
       >
         {loading ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
-        {loading ? "Preparing…" : "Download PDF"}
+        <span className="hidden sm:inline">{loading ? "Preparing…" : "Download PDF"}</span>
+        <span className="sm:hidden">{loading ? "…" : "PDF"}</span>
       </button>
 
       <button
         type="button"
         onClick={() => setShowSupport(true)}
         title="Support Vitae"
-        className="flex h-8 w-8 items-center justify-center rounded-md border border-[var(--line)] text-[var(--gold-dark)] hover:border-[var(--gold)] hover:bg-[var(--gold)]/10 transition-colors"
+        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-[var(--line)] text-[var(--gold-dark)] hover:border-[var(--gold)] hover:bg-[var(--gold)]/10 transition-colors"
       >
         <Coffee size={15} />
       </button>

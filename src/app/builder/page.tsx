@@ -88,8 +88,8 @@ function BuilderInner() {
 
   return (
     <div className="min-h-screen bg-[var(--cream)] flex flex-col overflow-x-hidden">
-      <header className="flex items-center justify-between px-6 py-4 border-b border-[var(--line)] bg-[var(--paper)]">
-        <div className="flex items-center gap-5">
+      <header className="flex items-center justify-between gap-2 px-3 sm:px-6 py-4 border-b border-[var(--line)] bg-[var(--paper)]">
+        <div className="flex items-center gap-2 sm:gap-5 min-w-0">
           <Link href="/templates" className="flex items-center gap-1.5 text-[13.5px] text-[var(--brown-500)] hover:text-[var(--brown-900)]">
             <ArrowLeft size={15} /> Templates
           </Link>
@@ -101,7 +101,7 @@ function BuilderInner() {
             {templateName}
           </span>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <span className="hidden md:block text-[11.5px] text-[var(--brown-300)]">
             Auto-saved on this device
           </span>
