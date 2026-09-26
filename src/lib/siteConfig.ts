@@ -7,16 +7,12 @@ const CONTENT_KEY = "content/site.json";
 
 // Every media field on SiteConfig, so replacing or clearing one moves the
 // previous file into Trash instead of silently orphaning it in B2.
-export const MEDIA_FIELDS: Record<
-  string,
-  { mediaType: "image" | "video"; label: string }
-> = {
+export const MEDIA_FIELDS: Record<string, { mediaType: "image"; label: string }> = {
   heroBackgroundImage: { mediaType: "image", label: "Hero background image" },
   howItWorksBackgroundImage: {
     mediaType: "image",
     label: "How It Works section background image",
   },
-  howItWorksVideoUrl: { mediaType: "video", label: '"Watch How It Works" video' },
 };
 
 export interface SiteConfig {
@@ -27,7 +23,6 @@ export interface SiteConfig {
   heroBackgroundImage: string; // stores a B2 object key, not a URL
   heroCV: CVData; // the fully-editable sample CV shown in the hero mockup
   howItWorksBackgroundImage: string; // stores a B2 object key, not a URL
-  howItWorksVideoUrl: string; // media proxy path (/api/media/videos%2F...)
 }
 
 const DEFAULTS: SiteConfig = {
@@ -39,7 +34,6 @@ const DEFAULTS: SiteConfig = {
   heroBackgroundImage: "",
   heroCV: sampleCV(),
   howItWorksBackgroundImage: "",
-  howItWorksVideoUrl: "",
 };
 
 export async function getSiteConfig(): Promise<SiteConfig> {

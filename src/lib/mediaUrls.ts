@@ -11,8 +11,8 @@ export function toDownloadUrl(key: string, filename?: string): string {
   return `/api/media/${encodeURIComponent(key)}?${qs.toString()}`;
 }
 
-// Reverses toMediaUrl(): turns "/api/media/videos%2Fabc.mp4" (with or
-// without a query string) back into the raw B2 object key "videos/abc.mp4".
+// Reverses toMediaUrl(): turns "/api/media/photos%2Fabc.webp" (with or
+// without a query string) back into the raw B2 object key "photos/abc.webp".
 export function mediaUrlToKey(mediaUrl: string): string {
   if (!mediaUrl) return "";
   const withoutQuery = mediaUrl.split("?")[0];

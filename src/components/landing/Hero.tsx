@@ -1,6 +1,5 @@
 import Link from "next/link";
 import MiniCVMockup from "./MiniCVMockup";
-import WatchHowItWorksButton from "./WatchHowItWorksButton";
 import type { SiteConfig } from "@/lib/siteConfig";
 
 export default function Hero({ config }: { config: SiteConfig }) {
@@ -54,7 +53,6 @@ export default function Hero({ config }: { config: SiteConfig }) {
               Get Started
               <span aria-hidden>→</span>
             </Link>
-            <WatchHowItWorksButton videoUrl={config.howItWorksVideoUrl} />
           </div>
         </div>
 

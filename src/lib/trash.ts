@@ -7,7 +7,7 @@ export interface TrashItem {
   id: string;
   key: string; // raw B2 object key
   field: string; // SiteConfig field this came from, e.g. "heroBackgroundImage"
-  mediaType: "image" | "video";
+  mediaType: "image";
   label: string; // human-readable, e.g. "Hero background image"
   deletedAt: string; // ISO timestamp
 }

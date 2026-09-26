@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RotateCcw, Trash2, Image as ImageIcon, Video as VideoIcon } from "lucide-react";
+import { RotateCcw, Trash2, Image as ImageIcon } from "lucide-react";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import { toMediaUrl } from "@/lib/mediaUrls";
 
@@ -9,7 +9,7 @@ interface TrashItem {
   id: string;
   key: string;
   field: string;
-  mediaType: "image" | "video";
+  mediaType: "image";
   label: string;
   deletedAt: string;
 }
@@ -76,7 +76,7 @@ export default function TrashPanel() {
     <div>
       <h1 className="font-display text-3xl text-[var(--brown-900)] mb-2">Trash</h1>
       <p className="text-[14px] text-[var(--brown-500)] mb-8">
-        Deleted images and videos stay here until you restore them or delete them permanently.
+        Deleted images stay here until you restore them or delete them permanently.
       </p>
 
       {error && <p className="mb-4 text-[13px] text-[#a5473a]">{error}</p>}
@@ -91,16 +91,12 @@ export default function TrashPanel() {
               className="flex items-center gap-4 rounded-md border border-[var(--line)] bg-[var(--paper)] p-3"
             >
               <div className="h-16 w-24 shrink-0 overflow-hidden rounded bg-black flex items-center justify-center">
-                {item.mediaType === "video" ? (
-                  <video src={toMediaUrl(item.key)} className="h-full w-full object-cover" muted />
-                ) : (
-                  <img src={toMediaUrl(item.key)} alt={item.label} className="h-full w-full object-cover" />
-                )}
+                <img src={toMediaUrl(item.key)} alt={item.label} className="h-full w-full object-cover" />
               </div>
 
               <div className="flex-1 min-w-0">
                 <p className="flex items-center gap-1.5 text-[13.5px] text-[var(--brown-900)]">
-                  {item.mediaType === "video" ? <VideoIcon size={13} /> : <ImageIcon size={13} />}
+                  <ImageIcon size={13} />
                   {item.label}
                 </p>
                 <p className="text-[12px] text-[var(--brown-300)]">

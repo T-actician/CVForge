@@ -7,7 +7,6 @@ import { FileText, LogOut, Save, Check, Trash2 } from "lucide-react";
 import type { SiteConfig } from "@/lib/siteConfig";
 import { createClient } from "@/lib/supabase/client";
 import ImageUploadField from "@/components/admin/ImageUploadField";
-import VideoUploadField from "@/components/admin/VideoUploadField";
 import TrashPanel from "@/components/admin/TrashPanel";
 import HeroCvEditor from "@/components/admin/HeroCvEditor";
 import TemplatesPanel from "@/components/admin/TemplatesPanel";
@@ -162,13 +161,6 @@ export default function AdminDashboard() {
             onChange={(url) => handleChange("heroBackgroundImage", url)}
             folder="site-hero"
             fieldKey="heroBackgroundImage"
-          />
-
-          <VideoUploadField
-            label='"Watch How It Works" video'
-            value={config.howItWorksVideoUrl}
-            onChange={(url) => handleChange("howItWorksVideoUrl", url)}
-            fieldKey="howItWorksVideoUrl"
           />
 
           {TEXT_FIELDS.map((f) => (
