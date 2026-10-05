@@ -8,6 +8,7 @@ import { FileText, Menu, X } from "lucide-react";
 const NAV = [
   { label: "Home", href: "/" },
   { label: "Templates", href: "/templates" },
+  { label: "Cover Letters", href: "/cover-letters" },
   { label: "Features", href: "/#features" },
   { label: "How It Works", href: "/#how-it-works" },
   { label: "Support", href: "/#pricing" },
