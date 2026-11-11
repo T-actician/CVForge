@@ -1,44 +1,27 @@
-// Renders an element to a single continuous A4-width PDF page (same method
-// the CV download uses) and returns the jsPDF instance.
-export async function elementToPdf(el: HTMLElement) {
-  const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
-    import("html2canvas-pro"),
-    import("jspdf"),
-  ]);
-  const PAGE_WIDTH_PX = 794;
-  const height = el.scrollHeight;
-  const maxScale = Math.sqrt(50_000_000 / (PAGE_WIDTH_PX * height));
-  const SCALE = Math.max(2, Math.min(7, maxScale));
+import type { PrintPayload } from "@/lib/printPayload";
 
-  const canvas = await html2canvas(el, {
-    scale: SCALE,
-    useCORS: true,
-    backgroundColor: "#ffffff",
-    width: PAGE_WIDTH_PX,
-    windowWidth: PAGE_WIDTH_PX,
-    height,
-    windowHeight: height,
+// Asks the server to render the real template in headless Chromium and
+// return a text-based PDF (selectable text, working links, ATS-readable).
+export async function generatePdf(payload: PrintPayload): Promise<Blob> {
+  const res = await fetch("/api/generate-pdf", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.error || "Could not generate the PDF.");
+  }
+  return res.blob();
+}
 
-  const mmWidth = 210;
-  const mmHeight = (canvas.height / SCALE / PAGE_WIDTH_PX) * mmWidth;
-  const M = 5;
-  const w = mmWidth + M * 2;
-  const h = mmHeight + M * 2;
-  const pdf = new jsPDF({
-    unit: "mm",
-    format: [w, h],
-    orientation: h >= w ? "portrait" : "landscape",
-  });
-  pdf.addImage(canvas.toDataURL("image/png"), "PNG", M, M, mmWidth, mmHeight, undefined, "FAST");
-
-  const box = el.getBoundingClientRect();
-  const k = mmWidth / PAGE_WIDTH_PX;
-  el.querySelectorAll<HTMLElement>("[data-pdf-link]").forEach((a) => {
-    const url = a.getAttribute("data-pdf-link");
-    if (!url) return;
-    const r = a.getBoundingClientRect();
-    pdf.link(M + (r.left - box.left) * k, M + (r.top - box.top) * k, r.width * k, r.height * k, { url });
-  });
-  return pdf;
+export function savePdf(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
