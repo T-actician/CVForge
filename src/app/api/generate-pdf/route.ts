@@ -59,6 +59,7 @@ export async function POST(req: NextRequest) {
     }
 
     const onVercel = !!process.env.VERCEL;
+    if (onVercel) chromium.setGraphicsMode = false; // skip WebGL stack, faster start
     browser = await puppeteer.launch({
       args: onVercel ? chromium.args : ["--no-sandbox"],
       executablePath: onVercel ? await chromium.executablePath() : localChromePath(),
@@ -66,6 +67,14 @@ export async function POST(req: NextRequest) {
     });
 
     const page = await browser.newPage();
+    // Fonts are self-hosted as static files on /print (variable Google fonts
+    // get embedded as Type 3 glyphs, which render crumpled). Block Google.
+    await page.setRequestInterception(true);
+    page.on("request", (r) => {
+      const u = r.url();
+      if (u.includes("fonts.googleapis.com") || u.includes("fonts.gstatic.com")) r.abort();
+      else r.continue();
+    });
     await page.emulateMediaType("screen");
     await page.setViewport({ width: PAGE_WIDTH_PX, height: 1200, deviceScaleFactor: 1 });
 
@@ -76,7 +85,7 @@ export async function POST(req: NextRequest) {
       (window as unknown as { __PRINT_DATA__: unknown }).__PRINT_DATA__ = data;
     }, payload);
 
-    const res = await page.goto(`${siteOrigin()}/print`, { waitUntil: "load", timeout: 30_000 });
+    const res = await page.goto(`${siteOrigin()}/print`, { waitUntil: "domcontentloaded", timeout: 30_000 });
     if (!res || !res.ok()) throw new Error(`Render page failed (${res?.status() ?? "no response"}).`);
 
     await page.waitForSelector('#print-page[data-ready="1"]', { timeout: 25_000 });

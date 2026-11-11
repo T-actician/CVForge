@@ -24,15 +24,16 @@ export default function DownloadButton({ settings }: { settings?: TemplateSettin
       const fileBaseName = (cv.fullName || "cv").replace(/\s+/g, "_");
       savePdf(blob, `${fileBaseName}-Vitae.pdf`);
 
-      // Also save a copy to cloud storage (Backblaze B2)
+      setLoading(false);
+
+      // Also save a copy to cloud storage (Backblaze B2), without blocking
       const formData = new FormData();
       formData.append("file", blob, `${fileBaseName}.pdf`);
       formData.append("name", fileBaseName);
-      const res = await fetch("/api/upload-pdf", { method: "POST", body: formData });
-      if (res.ok) {
-        const data = await res.json();
-        setCloudUrl(data.url);
-      }
+      fetch("/api/upload-pdf", { method: "POST", body: formData })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => data && setCloudUrl(data.url))
+        .catch(() => {});
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not generate the PDF.");
     } finally {

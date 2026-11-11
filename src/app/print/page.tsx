@@ -1,6 +1,15 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
+import "@fontsource/inter/latin-400.css";
+import "@fontsource/inter/latin-500.css";
+import "@fontsource/inter/latin-600.css";
+import "@fontsource/playfair-display/latin-500.css";
+import "@fontsource/playfair-display/latin-600.css";
+import "@fontsource/playfair-display/latin-700.css";
+import "@fontsource/lora/latin-400.css";
+import "@fontsource/lora/latin-500.css";
+import "@fontsource/lora/latin-600.css";
 import CVRenderer from "@/components/cv-templates/CVRenderer";
 import CoverLetterRenderer from "@/components/cover-letter-templates/CoverLetterRenderer";
 import type { PrintPayload } from "@/lib/printPayload";
@@ -54,7 +63,7 @@ export default function PrintPage() {
 
   return (
     <>
-      <style>{`html,body{margin:0;background:#fff !important}`}</style>
+      <style>{`html,body{margin:0;background:#fff !important;text-rendering:geometricPrecision}`}</style>
       <div
         id="print-page"
         data-ready={ready ? "1" : "0"}
