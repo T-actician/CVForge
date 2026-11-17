@@ -135,7 +135,7 @@ function BuilderInner() {
             ))}
           </div>
           <div className="p-5 md:overflow-y-auto md:max-h-[calc(100vh-140px)]">
-            {tab === "content" && <SectionManager />}
+            {tab === "content" && <SectionManager labelOptions={templateSettings[templateId]?.sectionLabels} />}
             {tab === "design" && (
               <div>
                 <p className="text-[13px] text-[var(--brown-500)] mb-3">

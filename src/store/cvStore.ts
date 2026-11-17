@@ -12,6 +12,7 @@ interface CVStore {
   updateField: <K extends keyof CVData>(key: K, value: CVData[K]) => void;
   toggleSection: (section: SectionType) => void;
   moveSection: (section: SectionType, direction: "up" | "down") => void;
+  setSectionLabel: (section: SectionType, label: string) => void;
   reset: () => void;
 }
 
@@ -47,6 +48,13 @@ export const useCVStore = create<CVStore>()(
         [order[idx], order[swapWith]] = [order[swapWith], order[idx]];
         set((state) => ({ cv: { ...state.cv, sectionOrder: order } }));
       },
+      setSectionLabel: (section, label) =>
+        set((state) => ({
+          cv: {
+            ...state.cv,
+            sectionLabels: { ...state.cv.sectionLabels, [section]: label },
+          },
+        })),
       reset: () => set({ cv: emptyCV() }),
     }),
     {

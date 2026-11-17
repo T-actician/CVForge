@@ -1,4 +1,4 @@
-import { CVData } from "@/lib/cvTypes";
+import { CVData, DEFAULT_SECTION_ORDER, resolveSectionLabel } from "@/lib/cvTypes";
 import {
   TemplateSettings,
   DEFAULT_TEMPLATE_SETTINGS,
@@ -22,6 +22,16 @@ export default function CVRenderer({
   settings?: TemplateSettings;
 }) {
   const s = settings ?? DEFAULT_TEMPLATE_SETTINGS;
+  const labelled: CVData = {
+    ...cv,
+    sectionLabels: Object.fromEntries(
+      DEFAULT_SECTION_ORDER.map((t) => [
+        t,
+        resolveSectionLabel(t, cv.sectionLabels?.[t], s.sectionLabels),
+      ])
+    ),
+  };
+  cv = labelled;
   const { accent, accentDark, accentLight } = deriveAccentShades(s.accentColor);
 
   const style: Record<string, string> = {

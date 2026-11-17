@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCVStore } from "@/store/cvStore";
-import { SECTION_LABELS, SectionType } from "@/lib/cvTypes";
+import { SectionLabelOptions, SectionType, labelOptionsFor, resolveSectionLabel } from "@/lib/cvTypes";
 import { ChevronDown, ChevronUp, Eye, EyeOff, User } from "lucide-react";
 import PersonalInfoEditor from "./PersonalInfoEditor";
 import {
@@ -27,8 +27,8 @@ const EDITORS: Record<SectionType, React.ComponentType> = {
   references: ReferencesEditor,
 };
 
-export default function SectionManager() {
-  const { cv, toggleSection, moveSection } = useCVStore();
+export default function SectionManager({ labelOptions }: { labelOptions?: SectionLabelOptions }) {
+  const { cv, toggleSection, moveSection, setSectionLabel } = useCVStore();
   const [open, setOpen] = useState<string>("personal");
 
   return (
@@ -62,7 +62,7 @@ export default function SectionManager() {
                   visible ? "text-[var(--brown-900)]" : "text-[var(--brown-300)]"
                 }`}
               >
-                {SECTION_LABELS[type]}
+                {resolveSectionLabel(type, cv.sectionLabels?.[type], labelOptions)}
               </button>
               <div className="flex items-center gap-1">
                 <button
@@ -97,7 +97,21 @@ export default function SectionManager() {
               </div>
             </div>
             {open === type && (
-              <div className="p-4">
+              <div className="p-4 space-y-4">
+                {labelOptionsFor(type, labelOptions).length > 1 && (
+                  <label className="block">
+                    <span className="block text-[12px] text-[var(--brown-500)] mb-1">Section title</span>
+                    <select
+                      value={resolveSectionLabel(type, cv.sectionLabels?.[type], labelOptions)}
+                      onChange={(e) => setSectionLabel(type, e.target.value)}
+                      className="w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3 py-2 text-[13.5px] text-[var(--brown-900)] outline-none focus:border-[var(--gold)]"
+                    >
+                      {labelOptionsFor(type, labelOptions).map((o) => (
+                        <option key={o} value={o}>{o}</option>
+                      ))}
+                    </select>
+                  </label>
+                )}
                 <Editor />
               </div>
             )}

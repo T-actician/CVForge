@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { TEMPLATES } from "@/lib/templates";
+import { SECTION_LABELS, DEFAULT_SECTION_ORDER, SectionType } from "@/lib/cvTypes";
 import TemplatePreview from "@/components/cv-templates/TemplatePreview";
 import {
   AllTemplateSettings,
@@ -104,6 +105,32 @@ export default function TemplatesPanel() {
                   ))}
                 </select>
               </label>
+
+              <details className="mb-3 rounded-md border border-[var(--line)] px-2.5 py-2">
+                <summary className="cursor-pointer text-[12.5px] text-[var(--brown-700)]">
+                  Section titles
+                </summary>
+                <p className="text-[11.5px] text-[var(--brown-500)] mt-2 mb-2">
+                  Comma-separated. First is the default; users pick from the rest.
+                </p>
+                <div className="space-y-2">
+                  {DEFAULT_SECTION_ORDER.map((type: SectionType) => (
+                    <label key={type} className="block text-[12px] text-[var(--brown-700)]">
+                      {SECTION_LABELS[type]}
+                      <input
+                        type="text"
+                        value={(s.sectionLabels?.[type] ?? [SECTION_LABELS[type]]).join(",")}
+                        onChange={(e) =>
+                          updateLocal(t.id, {
+                            sectionLabels: { ...s.sectionLabels, [type]: e.target.value.split(",") },
+                          })
+                        }
+                        className="mt-1 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-2.5 py-1.5 text-[13px] outline-none focus:border-[var(--gold)]"
+                      />
+                    </label>
+                  ))}
+                </div>
+              </details>
 
               <button
                 type="button"

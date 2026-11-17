@@ -1,5 +1,6 @@
 import { getJSON, putJSON } from "@/lib/b2";
 import { TEMPLATES } from "@/lib/templates";
+import type { SectionLabelOptions, SectionType } from "@/lib/cvTypes";
 
 const SETTINGS_KEY = "content/template-settings.json";
 
@@ -8,6 +9,8 @@ export type TemplateFont = "default" | "serif" | "sans";
 export interface TemplateSettings {
   accentColor: string; // hex, e.g. "#c9974a"
   fontFamily: TemplateFont;
+  // Admin-defined heading options per section. First option is the default.
+  sectionLabels?: SectionLabelOptions;
 }
 
 export const FONT_STACKS: Record<Exclude<TemplateFont, "default">, string> = {
@@ -44,7 +47,14 @@ export async function saveTemplateSettings(
   settings: TemplateSettings
 ): Promise<AllTemplateSettings> {
   const current = await getAllTemplateSettings();
-  const next = { ...current, [templateId]: settings };
+  const cleaned: SectionLabelOptions = {};
+  for (const [k, v] of Object.entries(settings.sectionLabels ?? {})) {
+    const list = Array.from(
+      new Set((v ?? []).map((l) => String(l).trim().slice(0, 40)).filter(Boolean))
+    );
+    if (list.length) cleaned[k as SectionType] = list;
+  }
+  const next = { ...current, [templateId]: { ...settings, sectionLabels: cleaned } };
   await putJSON(SETTINGS_KEY, next);
   return next;
 }

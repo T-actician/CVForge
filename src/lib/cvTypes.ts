@@ -81,6 +81,8 @@ export interface CVData {
   references: ReferenceItem[];
   sectionOrder: SectionType[];
   visibleSections: Record<SectionType, boolean>;
+  // User's chosen heading per section (must be one of the admin-defined options)
+  sectionLabels?: Partial<Record<SectionType, string>>;
 }
 
 export const SECTION_LABELS: Record<SectionType, string> = {
@@ -93,6 +95,24 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   languages: "Languages",
   references: "References",
 };
+
+export type SectionLabelOptions = Partial<Record<SectionType, string[]>>;
+
+// Options for a section: admin-defined list, or the built-in default.
+export function labelOptionsFor(type: SectionType, options?: SectionLabelOptions): string[] {
+  const list = (options?.[type] ?? []).map((l) => l.trim()).filter(Boolean);
+  return list.length ? list : [SECTION_LABELS[type]];
+}
+
+// Heading shown on the CV: user's choice if still valid, else first option.
+export function resolveSectionLabel(
+  type: SectionType,
+  chosen: string | undefined,
+  options?: SectionLabelOptions
+): string {
+  const list = labelOptionsFor(type, options);
+  return chosen && list.includes(chosen) ? chosen : list[0];
+}
 
 export const DEFAULT_SECTION_ORDER: SectionType[] = [
   "summary",

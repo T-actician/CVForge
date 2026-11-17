@@ -227,7 +227,7 @@ export function CVSection({
   style: TitleStyle;
 }) {
   const s = style;
-  const label = SECTION_LABELS[type];
+  const label = cv.sectionLabels?.[type] ?? SECTION_LABELS[type];
 
   if (type === "summary") {
     return (
