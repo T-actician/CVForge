@@ -28,12 +28,14 @@ export interface EducationItem {
   start: string;
   end: string;
   details: string;
+  included?: boolean;
 }
 
 export interface SkillItem {
   id: string;
   name: string;
   level: number; // 1-5
+  included?: boolean;
 }
 
 export interface ProjectItem {
@@ -41,6 +43,7 @@ export interface ProjectItem {
   name: string;
   link: string;
   description: string;
+  included?: boolean;
 }
 
 export interface CertificationItem {
@@ -48,12 +51,14 @@ export interface CertificationItem {
   name: string;
   issuer: string;
   date: string;
+  included?: boolean;
 }
 
 export interface LanguageItem {
   id: string;
   name: string;
   level: string;
+  included?: boolean;
 }
 
 export interface ReferenceItem {
@@ -61,6 +66,7 @@ export interface ReferenceItem {
   name: string;
   role: string;
   contact: string;
+  included?: boolean;
 }
 
 export interface CVData {

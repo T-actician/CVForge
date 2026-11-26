@@ -16,6 +16,21 @@ import { contactError, sanitizeContactInput } from "@/lib/validators";
 
 const uid = () => Math.random().toString(36).slice(2, 9);
 
+function IncludeToggle({
+  included,
+  onChange,
+}: {
+  included?: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label className="flex items-center gap-2 text-[12.5px] text-[var(--brown-900)] font-medium">
+      <input type="checkbox" checked={included !== false} onChange={(e) => onChange(e.target.checked)} />
+      Include in CV
+    </label>
+  );
+}
+
 export function SummaryEditor() {
   const { cv, updateField } = useCVStore();
   return (
@@ -153,7 +168,11 @@ export function EducationEditor() {
   return (
     <div className="space-y-5">
       {items.map((ed) => (
-        <div key={ed.id} className="rounded-lg border border-[var(--line)] p-4 space-y-3">
+        <div
+          key={ed.id}
+          className={`rounded-lg border border-[var(--line)] p-4 space-y-3 ${ed.included === false ? "opacity-60" : ""}`}
+        >
+          <IncludeToggle included={ed.included} onChange={(v) => update(ed.id, { included: v })} />
           <Field label="Degree / qualification" value={ed.degree} onChange={(v) => update(ed.id, { degree: v })} />
           <div className="grid grid-cols-2 gap-3">
             <Field label="School" value={ed.school} onChange={(v) => update(ed.id, { school: v })} />
@@ -191,7 +210,13 @@ export function SkillsEditor() {
   return (
     <div className="space-y-3">
       {items.map((s) => (
-        <div key={s.id} className="flex items-center gap-2">
+        <div key={s.id} className={`flex items-center gap-2 ${s.included === false ? "opacity-60" : ""}`}>
+          <input
+            type="checkbox"
+            title="Include in CV"
+            checked={s.included !== false}
+            onChange={(e) => update(s.id, { included: e.target.checked })}
+          />
           <input
             value={s.name}
             onChange={(e) => update(s.id, { name: e.target.value })}
@@ -221,7 +246,11 @@ export function ProjectsEditor() {
   return (
     <div className="space-y-5">
       {items.map((p) => (
-        <div key={p.id} className="rounded-lg border border-[var(--line)] p-4 space-y-3">
+        <div
+          key={p.id}
+          className={`rounded-lg border border-[var(--line)] p-4 space-y-3 ${p.included === false ? "opacity-60" : ""}`}
+        >
+          <IncludeToggle included={p.included} onChange={(v) => update(p.id, { included: v })} />
           <Field label="Project name" value={p.name} onChange={(v) => update(p.id, { name: v })} />
           <Field label="Link (optional)" value={p.link} onChange={(v) => update(p.id, { link: v })} />
           <TextAreaField
@@ -254,7 +283,11 @@ export function CertificationsEditor() {
   return (
     <div className="space-y-5">
       {items.map((c) => (
-        <div key={c.id} className="rounded-lg border border-[var(--line)] p-4 space-y-3">
+        <div
+          key={c.id}
+          className={`rounded-lg border border-[var(--line)] p-4 space-y-3 ${c.included === false ? "opacity-60" : ""}`}
+        >
+          <IncludeToggle included={c.included} onChange={(v) => update(c.id, { included: v })} />
           <Field label="Certification" value={c.name} onChange={(v) => update(c.id, { name: v })} />
           <div className="grid grid-cols-2 gap-3">
             <Field label="Issuer" value={c.issuer} onChange={(v) => update(c.id, { issuer: v })} />
@@ -283,7 +316,13 @@ export function LanguagesEditor() {
   return (
     <div className="space-y-3">
       {items.map((l) => (
-        <div key={l.id} className="flex items-center gap-2">
+        <div key={l.id} className={`flex items-center gap-2 ${l.included === false ? "opacity-60" : ""}`}>
+          <input
+            type="checkbox"
+            title="Include in CV"
+            checked={l.included !== false}
+            onChange={(e) => update(l.id, { included: e.target.checked })}
+          />
           <input
             value={l.name}
             onChange={(e) => update(l.id, { name: e.target.value })}
@@ -319,7 +358,11 @@ export function ReferencesEditor() {
   return (
     <div className="space-y-5">
       {items.map((r) => (
-        <div key={r.id} className="rounded-lg border border-[var(--line)] p-4 space-y-3">
+        <div
+          key={r.id}
+          className={`rounded-lg border border-[var(--line)] p-4 space-y-3 ${r.included === false ? "opacity-60" : ""}`}
+        >
+          <IncludeToggle included={r.included} onChange={(v) => update(r.id, { included: v })} />
           <Field label="Name" value={r.name} onChange={(v) => update(r.id, { name: v })} />
           <Field label="Role / relationship" value={r.role} onChange={(v) => update(r.id, { role: v })} />
           <Field

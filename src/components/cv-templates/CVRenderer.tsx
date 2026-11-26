@@ -31,7 +31,17 @@ export default function CVRenderer({
       ])
     ),
   };
-  cv = { ...labelled, experience: labelled.experience.filter((e) => e.included !== false) };
+  const on = <T extends { included?: boolean }>(a: T[]) => a.filter((x) => x.included !== false);
+  cv = {
+    ...labelled,
+    experience: on(labelled.experience),
+    education: on(labelled.education),
+    skills: on(labelled.skills),
+    projects: on(labelled.projects),
+    certifications: on(labelled.certifications),
+    languages: on(labelled.languages),
+    references: on(labelled.references),
+  };
   const { accent, accentDark, accentLight } = deriveAccentShades(s.accentColor);
 
   const style: Record<string, string> = {
