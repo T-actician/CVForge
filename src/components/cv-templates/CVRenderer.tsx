@@ -31,7 +31,7 @@ export default function CVRenderer({
       ])
     ),
   };
-  cv = labelled;
+  cv = { ...labelled, experience: labelled.experience.filter((e) => e.included !== false) };
   const { accent, accentDark, accentLight } = deriveAccentShades(s.accentColor);
 
   const style: Record<string, string> = {

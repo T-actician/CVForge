@@ -17,6 +17,7 @@ export interface ExperienceItem {
   end: string;
   current: boolean;
   bullets: string[];
+  included?: boolean; // false = hidden from the CV (undefined = shown)
 }
 
 export interface EducationItem {

@@ -58,7 +58,20 @@ export function ExperienceEditor() {
   return (
     <div className="space-y-5">
       {items.map((e) => (
-        <div key={e.id} className="rounded-lg border border-[var(--line)] p-4 space-y-3">
+        <div
+          key={e.id}
+          className={`rounded-lg border border-[var(--line)] p-4 space-y-3 ${
+            e.included === false ? "opacity-60" : ""
+          }`}
+        >
+          <label className="flex items-center gap-2 text-[12.5px] text-[var(--brown-900)] font-medium">
+            <input
+              type="checkbox"
+              checked={e.included !== false}
+              onChange={(ev) => update(e.id, { included: ev.target.checked })}
+            />
+            Include in CV
+          </label>
           <div className="grid grid-cols-2 gap-3">
             <Field label="Job title" value={e.role} onChange={(v) => update(e.id, { role: v })} />
             <Field label="Company" value={e.company} onChange={(v) => update(e.id, { company: v })} />
